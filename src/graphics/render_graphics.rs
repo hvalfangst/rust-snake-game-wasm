@@ -1,11 +1,12 @@
+use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
 use crate::state::structs::GameState;
 
 pub fn render_pixel_buffer(game_state: &mut GameState) {
     // Scale the buffer to the screen resolution
-    scale_buffer(&game_state.window_buffer, &mut game_state.scaled_buffer, game_state.art_width, game_state.art_height, game_state.sprites.background[0].width as usize, game_state.sprites.background[0].height as usize);
+    scale_buffer(&game_state.window_buffer, &mut game_state.scaled_buffer, ART_WIDTH, ART_HEIGHT, game_state.window_width, game_state.window_height);
 
     // Draw the scaled buffer onto the window
-    game_state.window.update_with_buffer(&game_state.scaled_buffer, game_state.art_width, game_state.art_height).unwrap();
+    game_state.window.update_with_buffer(&game_state.scaled_buffer, game_state.window_width, game_state.window_height).unwrap();
 }
 
 // Function to scale a buffer to a different resolution

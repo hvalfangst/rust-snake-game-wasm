@@ -3,20 +3,18 @@ use std::io::{BufRead, Read};
 use winit::event_loop::EventLoop;
 use winit::monitor::MonitorHandle;
 
-use crate::state::constants::graphics::{SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
+use crate::state::constants::graphics::{ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
 
-use crate::state::structs::{GameState, Player};
+use crate::state::structs::{Direction, GameState, Snake};
 use crate::{
     graphics::sprites::SpriteMaps,
     state::core_logic::initialize_core_logic_map,
     state::event_loop::start_event_loop,
 };
-use input::handler::initialize_input_logic_map;
-use rodio::{OutputStream, Sink};
 
+use rodio::{OutputStream, Sink};
 mod state;
 mod graphics;
-
 mod input;
 
 fn main() {
@@ -24,8 +22,8 @@ fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let mut sink = Sink::try_new(&stream_handle).unwrap();
     let sprites = SpriteMaps::new();
-    let mut player = Player::new(100.0, 176.0);
-    let input_logic = initialize_input_logic_map();
+
+    let mut player = Snake::new(40.0, 150.0, Direction::Right);
     let core_logic = initialize_core_logic_map();
     let fullscreen = false;
 
@@ -40,7 +38,7 @@ fn main() {
 
     // Create a window with the dimensions of the primary monitor
     let mut window = Window::new(
-        "Snake",
+        "Woodworm",
         window_width,
         window_height,
         WindowOptions::default(),
@@ -50,20 +48,18 @@ fn main() {
 
 
     // Initialize window and scaled buffer
-    let mut window_buffer = vec![0; 256 * 224];
+    let mut window_buffer = vec![0; ART_WIDTH * ART_WIDTH];
     let mut scaled_buffer = vec![0; window_width * window_height];
 
-    let game_state = GameState {
+    let game_state = GameState::new(
         player,
         sprites,
-        window_buffer: &mut window_buffer,
+        &mut window_buffer,
         window_width,
         window_height,
-        window: &mut window,
-        scaled_buffer: &mut scaled_buffer,
-        art_width: 256, // Assuming the art width is 256 pixels
-        art_height: 224, // Assuming the art height is 224 pixels
-    };
+        &mut window,
+        &mut scaled_buffer,
+    );
 
-    start_event_loop(game_state, input_logic, core_logic, &mut sink);
+    start_event_loop(game_state, core_logic, &mut sink);
 }

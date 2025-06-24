@@ -13,15 +13,29 @@ impl SpriteFrame {
 }
 
 pub struct SpriteMaps {
-    pub player: Vec<SpriteFrame>,
-    pub background: Vec<SpriteFrame>
+    pub body: Vec<SpriteFrame>,
+    pub background: Vec<SpriteFrame>,
+    pub food: Vec<SpriteFrame>,
+    pub head: Vec<SpriteFrame>,
+    pub tail: Vec<SpriteFrame>,
+    pub game_over_screen: Vec<SpriteFrame>,
+    pub layer_0: Vec<SpriteFrame>,
+    pub layer_1: Vec<SpriteFrame>,
+    pub blue_strip: Vec<SpriteFrame>,
 }
 
 impl SpriteMaps {
     pub fn new() -> Self {
         Self {
             background: load_sprites_from_map("assets/sprites/background.png", 256, 224),
-            player: load_sprites_from_map("assets/sprites/player.png", 16, 16)
+            body: load_sprites_from_map("assets/sprites/body.png", 6, 6),
+            food: load_sprites_from_map("assets/sprites/food.png", 16, 16),
+            head: load_sprites_from_map("assets/sprites/head.png", 16, 16),
+            tail: load_sprites_from_map("assets/sprites/tail.png", 6, 6),
+            game_over_screen: load_sprites_from_map("assets/sprites/game_over.png", 256, 224),
+            layer_0: load_sprites_from_map("assets/sprites/layer_0.png", 256, 224),
+            layer_1: load_sprites_from_map("assets/sprites/layer_1.png", 256, 224),
+            blue_strip: load_sprites_from_map("assets/sprites/blue_strip.png", 256, 224),
         }
     }
 }
