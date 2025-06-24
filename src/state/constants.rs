@@ -8,6 +8,9 @@ pub mod graphics {
     pub const SCALED_WINDOW_HEIGHT: usize = 540;
     pub const TILE_WIDTH: usize = 16;
     pub const TILE_HEIGHT: usize = 16;
+
+    pub const ART_WIDTH: usize = 256;
+    pub const ART_HEIGHT: usize = 224;
 }
 
 pub mod physics {

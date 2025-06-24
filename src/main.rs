@@ -3,9 +3,9 @@ use std::io::{BufRead, Read};
 use winit::event_loop::EventLoop;
 use winit::monitor::MonitorHandle;
 
-use crate::state::constants::graphics::{SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
+use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
 
-use crate::state::structs::{GameState, Player};
+use crate::state::structs::{GameState, Snake, Vector2D};
 use crate::{
     graphics::sprites::SpriteMaps,
     state::core_logic::initialize_core_logic_map,
@@ -24,7 +24,10 @@ fn main() {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let mut sink = Sink::try_new(&stream_handle).unwrap();
     let sprites = SpriteMaps::new();
-    let mut player = Player::new(100.0, 176.0);
+
+    let mut player = Snake::new(0.0, 0.0);
+
+
     let input_logic = initialize_input_logic_map();
     let core_logic = initialize_core_logic_map();
     let fullscreen = false;
@@ -50,7 +53,7 @@ fn main() {
 
 
     // Initialize window and scaled buffer
-    let mut window_buffer = vec![0; 256 * 224];
+    let mut window_buffer = vec![0; ART_WIDTH * ART_WIDTH];
     let mut scaled_buffer = vec![0; window_width * window_height];
 
     let game_state = GameState {
@@ -61,8 +64,10 @@ fn main() {
         window_height,
         window: &mut window,
         scaled_buffer: &mut scaled_buffer,
-        art_width: 256, // Assuming the art width is 256 pixels
-        art_height: 224, // Assuming the art height is 224 pixels
+        food: state::structs::Food {
+            position: Vector2D { x: 0.0, y: 0.0 },
+            is_active: false,
+        },
     };
 
     start_event_loop(game_state, input_logic, core_logic, &mut sink);

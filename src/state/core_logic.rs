@@ -1,9 +1,10 @@
-use crate::state::constants::physics::{ACCELERATION, LOWER_BOUND_X, LOWER_BOUND_Y, MAX_VELOCITY, UPPER_BOUND_X, UPPER_BOUND_Y};
-use crate::state::structs::{Direction, GameState};
+use crate::state::constants::physics::{LOWER_BOUND_X, LOWER_BOUND_Y, UPPER_BOUND_X, UPPER_BOUND_Y};
+use crate::state::structs::{Direction, Food, GameState, Vector2D};
 use rodio::Sink;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use rand::Rng;
 
 pub fn execute_core_logic(game_state: &mut GameState, core_logic_operations: &HashMap<String, Rc<RefCell<dyn CoreLogic>>>, sink: &mut Sink) {
     for (_, core_logic_operation) in core_logic_operations.iter() {
@@ -19,21 +20,14 @@ pub struct VerticalBounds;
 
 impl CoreLogic for VerticalBounds {
     fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+        let player_width = game_state.sprites.player[0].width as f32;
+
         // Check if the player is out of vertical bounds
-        if game_state.player.y + 16.0 <= LOWER_BOUND_Y {
-            println!(
-                "Player reached upmost y. Resetting y to LOWER_BOUND. Current y: {}, vy: {}",
-                game_state.player.y, game_state.player.vy
-            );
-            game_state.player.y =  (game_state.player.y + 16.0).abs();
-            game_state.player.vy = 0.0; // Stop vertical movement
-        } else if game_state.player.y + 16.0 >= UPPER_BOUND_Y {
-            println!(
-                "Player reached downmost y. Resetting y to UPPER_BOUND. Current y: {}, vy: {}",
-                game_state.player.y, game_state.player.vy
-            );
-            game_state.player.y = (game_state.player.y - 16.0).abs(); // Adjust y to fit within bounds
-            game_state.player.vy = 0.0; // Stop vertical movement
+        if game_state.player.ledger[0].y + player_width <= LOWER_BOUND_Y {
+            game_state.player.ledger[0].y = (game_state.player.ledger[0].y + player_width).abs();
+        } else if game_state.player.ledger[0].y + player_width >= UPPER_BOUND_Y {
+            game_state.player.ledger[0].y = (game_state.player.ledger[0].y - player_width).abs(); // Adjust y to fit within bounds
+
         }
     }
 }
@@ -42,25 +36,15 @@ pub struct HorizontalBounds;
 
 impl CoreLogic for HorizontalBounds {
     fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+        let player_width = game_state.sprites.player[0].width as f32;
+
         // Check if the player is out of horizontal bounds
-        if game_state.player.x + 16.0 <= LOWER_BOUND_X {
-            println!(
-                "Player reached leftmost x. Resetting x to LOWER_BOUND. Current x: {}, vx: {}",
-                game_state.player.x, game_state.player.vx
-            );
-            game_state.player.x = (game_state.player.x + 16.0).abs(); // Adjust x to fit within bounds
-            println!(
-                "Adjusted x to fit within bounds. New x: {}, vx: {}",
-                game_state.player.x, game_state.player.vx
-            );
-            game_state.player.vx = 0.0; // Stop horizontal movement
-        } else if game_state.player.x + 16.0 >= UPPER_BOUND_X {
-            println!(
-                "Player reached rightmost x. Resetting x to UPPER_BOUND. Current x: {}, vx: {}",
-                game_state.player.x, game_state.player.vx
-            );
-            game_state.player.x = (game_state.player.x - 16.0).abs(); // Adjust x to fit within bounds
-            game_state.player.vx = 0.0; // Stop horizontal movement
+        if game_state.player.ledger[0].x + player_width <= LOWER_BOUND_X {
+            game_state.player.ledger[0].x = (game_state.player.ledger[0].x + player_width).abs(); // Adjust x to fit within bounds
+
+        } else if game_state.player.ledger[0].x + player_width >= UPPER_BOUND_X {
+            game_state.player.ledger[0].x = (game_state.player.ledger[0].x - player_width).abs(); // Adjust x to fit within bounds
+
         }
     }
 }
@@ -68,49 +52,9 @@ impl CoreLogic for HorizontalBounds {
 pub struct CheckGameOver;
 
 impl CoreLogic for CheckGameOver {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
-    }
+    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {}
 }
 
-pub fn increase_x_velocity(game_state: &mut GameState) {
-    game_state.player.vx += ACCELERATION;
-
-    if game_state.player.vx > MAX_VELOCITY {
-        game_state.player.vx = MAX_VELOCITY;
-    } else {
-        game_state.player.vx *= 0.98;
-        if game_state.player.vx > MAX_VELOCITY {
-            game_state.player.vx = MAX_VELOCITY;
-        }
-    }
-}
-
-pub fn decrease_x_velocity(game_state: &mut GameState) {
-    game_state.player.vx *= 0.95;
-    if game_state.player.vx.abs() < 0.1 {
-        game_state.player.vx = 0.0;
-    }
-}
-
-pub fn increase_y_velocity(game_state: &mut GameState) {
-    game_state.player.vy += ACCELERATION;
-
-    if game_state.player.vy > MAX_VELOCITY {
-        game_state.player.vy = MAX_VELOCITY;
-    } else {
-        game_state.player.vy *= 0.98;
-        if game_state.player.vy > MAX_VELOCITY {
-            game_state.player.vy = MAX_VELOCITY;
-        }
-    }
-}
-
-pub fn decrease_y_velocity(game_state: &mut GameState) {
-    game_state.player.vy *= 0.95;
-    if game_state.player.vy.abs() < 0.1 {
-        game_state.player.vy = 0.0;
-    }
-}
 
 pub struct ModifyPosition;
 
@@ -118,32 +62,68 @@ impl CoreLogic for ModifyPosition {
     fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
         match game_state.player.direction {
             Direction::Left => {
-                // println!("Moving left: x = {}, vx = {}", game_state.player.x, game_state.player.vx);
-                game_state.player.x -= game_state.player.vx;
+
+                game_state.player.ledger[0].x -= 1.0; // Move the head of the snake left
+
+                // let new_x = game_state.player.ledger.last().unwrap().x - 1.0;
+                // game_state.player.ledger.push(Vector2D { x: new_x, y: game_state.player.ledger[0].y });
+                // game_state.player.ledger.sort_by(|a, b| a.x.partial_cmp(&b.x).unwrap());
+
             }
             Direction::Right => {
-                // println!("Moving right: x = {}, vx = {}", game_state.player.x, game_state.player.vx);
-                game_state.player.x += game_state.player.vx;
+
+                game_state.player.ledger[0].x += 1.0; // Move the head of the snake right
+
+                // let new_x = game_state.player.ledger.last().unwrap().x + 1.0;
+                // game_state.player.ledger.push(Vector2D { x: new_x, y: game_state.player.ledger[0].y });
+                // game_state.player.ledger.sort_by(|a, b| a.x.partial_cmp(&b.x).unwrap());
+
             }
             Direction::Up => {
-                // println!("Moving up: y = {}, vy = {}", game_state.player.y, game_state.player.vy);
-                game_state.player.y -= game_state.player.vy;
+                game_state.player.ledger[0].y -= 1.0; // Move the head of the snake up
+                // let new_y = game_state.player.ledger.last().unwrap().y - 1.0;
+                // game_state.player.ledger.push(Vector2D { x: game_state.player.ledger[0].x, y: new_y });
+                // game_state.player.ledger.sort_by(|a, b| a.y.partial_cmp(&b.y).unwrap());
             }
             Direction::Down => {
-                // println!("Moving down: y = {}, vy = {}", game_state.player.y, game_state.player.vy);
-                game_state.player.y += game_state.player.vy;
+                game_state.player.ledger[0].y += 1.0; // Move the head of the snake down
+                // let new_y = game_state.player.ledger.last().unwrap().y + 1.0;
+                // game_state.player.ledger.push(Vector2D { x: game_state.player.ledger[0].x, y: new_y });
+                // game_state.player.ledger.sort_by(|a, b| a.y.partial_cmp(&b.y).unwrap());
+
             }
         }
     }
 }
+
+pub struct SpawnFood;
+
+impl CoreLogic for SpawnFood {
+    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+        if game_state.food.is_active {
+            return; // Food is already active, no need to spawn new food
+        }
+
+        game_state.food = Food {
+            position: Vector2D {
+                x: rand::rng().random_range(LOWER_BOUND_X..UPPER_BOUND_X),
+                y: rand::rng().random_range(LOWER_BOUND_Y..UPPER_BOUND_Y),
+            },
+            is_active: true,
+        };
+    }
+}
+
+
 
 pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>> {
     let mut logic_map: HashMap<String, Rc<RefCell<dyn CoreLogic>>> = HashMap::new();
 
     logic_map.insert("VerticalBounds".to_string(), Rc::new(RefCell::new(VerticalBounds)));
     logic_map.insert("HorizontalBounds".to_string(), Rc::new(RefCell::new(HorizontalBounds)));
-    logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(CheckGameOver)));
+    // logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(CheckGameOver)));
     logic_map.insert("ModifyPosition".to_string(), Rc::new(RefCell::new(ModifyPosition)));
+    logic_map.insert("SpawnFood".to_string(), Rc::new(RefCell::new(SpawnFood)));
 
     logic_map
 }
