@@ -1,5 +1,4 @@
 use image::GenericImageView;
-use crate::state::structs::Food;
 
 pub struct SpriteFrame {
     pub width: u32,  // Width of the sprite in pixels
@@ -14,17 +13,19 @@ impl SpriteFrame {
 }
 
 pub struct SpriteMaps {
-    pub player: Vec<SpriteFrame>,
+    pub body: Vec<SpriteFrame>,
     pub background: Vec<SpriteFrame>,
-    pub food: Vec<SpriteFrame>
+    pub food: Vec<SpriteFrame>,
+    pub head: Vec<SpriteFrame>,
 }
 
 impl SpriteMaps {
     pub fn new() -> Self {
         Self {
             background: load_sprites_from_map("assets/sprites/background.png", 256, 224),
-            player: load_sprites_from_map("assets/sprites/player.png", 6, 8),
-            food: load_sprites_from_map("assets/sprites/food.png", 6, 8)
+            body: load_sprites_from_map("assets/sprites/body.png", 6, 8),
+            food: load_sprites_from_map("assets/sprites/food.png", 16, 16),
+            head: load_sprites_from_map("assets/sprites/head.png", 16, 16),
         }
     }
 }

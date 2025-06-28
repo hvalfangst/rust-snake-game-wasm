@@ -20,13 +20,13 @@ pub struct VerticalBounds;
 
 impl CoreLogic for VerticalBounds {
     fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
-        let player_width = game_state.sprites.player[0].width as f32;
+        let player_width = game_state.sprites.body[0].width as f32;
 
         // Check if the player is out of vertical bounds
-        if game_state.player.ledger[0].y + player_width <= LOWER_BOUND_Y {
-            game_state.player.ledger[0].y = (game_state.player.ledger[0].y + player_width).abs();
-        } else if game_state.player.ledger[0].y + player_width >= UPPER_BOUND_Y {
-            game_state.player.ledger[0].y = (game_state.player.ledger[0].y - player_width).abs(); // Adjust y to fit within bounds
+        if game_state.player.body[0].y + player_width <= LOWER_BOUND_Y {
+            game_state.player.body[0].y = (game_state.player.body[0].y + player_width).abs();
+        } else if game_state.player.body[0].y + player_width >= UPPER_BOUND_Y {
+            game_state.player.body[0].y = (game_state.player.body[0].y - player_width).abs(); // Adjust y to fit within bounds
 
         }
     }
@@ -36,14 +36,14 @@ pub struct HorizontalBounds;
 
 impl CoreLogic for HorizontalBounds {
     fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
-        let player_width = game_state.sprites.player[0].width as f32;
+        let player_width = game_state.sprites.body[0].width as f32;
 
         // Check if the player is out of horizontal bounds
-        if game_state.player.ledger[0].x + player_width <= LOWER_BOUND_X {
-            game_state.player.ledger[0].x = (game_state.player.ledger[0].x + player_width).abs(); // Adjust x to fit within bounds
+        if game_state.player.body[0].x + player_width <= LOWER_BOUND_X {
+            game_state.player.body[0].x = (game_state.player.body[0].x + player_width).abs(); // Adjust x to fit within bounds
 
-        } else if game_state.player.ledger[0].x + player_width >= UPPER_BOUND_X {
-            game_state.player.ledger[0].x = (game_state.player.ledger[0].x - player_width).abs(); // Adjust x to fit within bounds
+        } else if game_state.player.body[0].x + player_width >= UPPER_BOUND_X {
+            game_state.player.body[0].x = (game_state.player.body[0].x - player_width).abs(); // Adjust x to fit within bounds
 
         }
     }
@@ -63,7 +63,7 @@ impl CoreLogic for ModifyPosition {
         match game_state.player.direction {
             Direction::Left => {
 
-                game_state.player.ledger[0].x -= 1.0; // Move the head of the snake left
+                game_state.player.body[0].x -= 1.0; // Move the head of the snake left
 
                 // let new_x = game_state.player.ledger.last().unwrap().x - 1.0;
                 // game_state.player.ledger.push(Vector2D { x: new_x, y: game_state.player.ledger[0].y });
@@ -72,7 +72,7 @@ impl CoreLogic for ModifyPosition {
             }
             Direction::Right => {
 
-                game_state.player.ledger[0].x += 1.0; // Move the head of the snake right
+                game_state.player.body[0].x += 1.0; // Move the head of the snake right
 
                 // let new_x = game_state.player.ledger.last().unwrap().x + 1.0;
                 // game_state.player.ledger.push(Vector2D { x: new_x, y: game_state.player.ledger[0].y });
@@ -80,13 +80,13 @@ impl CoreLogic for ModifyPosition {
 
             }
             Direction::Up => {
-                game_state.player.ledger[0].y -= 1.0; // Move the head of the snake up
+                game_state.player.body[0].y -= 1.0; // Move the head of the snake up
                 // let new_y = game_state.player.ledger.last().unwrap().y - 1.0;
                 // game_state.player.ledger.push(Vector2D { x: game_state.player.ledger[0].x, y: new_y });
                 // game_state.player.ledger.sort_by(|a, b| a.y.partial_cmp(&b.y).unwrap());
             }
             Direction::Down => {
-                game_state.player.ledger[0].y += 1.0; // Move the head of the snake down
+                game_state.player.body[0].y += 1.0; // Move the head of the snake down
                 // let new_y = game_state.player.ledger.last().unwrap().y + 1.0;
                 // game_state.player.ledger.push(Vector2D { x: game_state.player.ledger[0].x, y: new_y });
                 // game_state.player.ledger.sort_by(|a, b| a.y.partial_cmp(&b.y).unwrap());
@@ -106,13 +106,61 @@ impl CoreLogic for SpawnFood {
 
         game_state.food = Food {
             position: Vector2D {
-                x: rand::rng().random_range(LOWER_BOUND_X..UPPER_BOUND_X),
-                y: rand::rng().random_range(LOWER_BOUND_Y..UPPER_BOUND_Y),
+                x: rand::rng().random_range(LOWER_BOUND_X + 10.0..UPPER_BOUND_X - 10.0),
+                y: rand::rng().random_range(LOWER_BOUND_Y + 10.0..UPPER_BOUND_Y - 10.0)
             },
             is_active: true,
+            current_sprite_frame_index: 0, // Start with the first sprite frame
+            last_sprite_frame_index_update_time: std::time::Instant::now(), // Initialize the last update time
         };
     }
 }
+
+pub struct CheckIfFoodWasEaten;
+
+impl CoreLogic for CheckIfFoodWasEaten {
+    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+        if !game_state.food.is_active {
+            return; // Food is not active, no need to check
+        }
+
+        let head_position = &game_state.player.body[0];
+        let food_position = &game_state.food.position;
+
+        // Check if the head of the snake is roughly at the same position as the food
+        if (head_position.x - food_position.x).abs() < 16.0 && (head_position.y - food_position.y).abs() < 16.0 {
+            game_state.food.is_active = false; // Deactivate food
+            // Grow snake
+
+            game_state.player.body.push(Vector2D {
+                x: head_position.x,
+                y: head_position.y,
+            }); // Add a new segment to the snake's body at the head's position
+
+
+            // Optionally, you can add logic to grow the snake or play a sound here
+            println!("Food eaten at position: ({}, {})", food_position.x, food_position.y);
+        }
+    }
+}
+
+pub struct AlternateBetweenFoodSpriteFrames;
+
+impl CoreLogic for AlternateBetweenFoodSpriteFrames {
+    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+        if !game_state.food.is_active {
+            return; // Food is not active, no need to alternate sprite frames
+        }
+
+        // Alternate the food sprite frame index every 500 ms
+        if game_state.food.last_sprite_frame_index_update_time.elapsed().as_millis() >= 500 {
+            game_state.food.current_sprite_frame_index = 1 - game_state.food.current_sprite_frame_index;
+            game_state.food.last_sprite_frame_index_update_time = std::time::Instant::now();
+        }
+    }
+}
+
+
 
 
 
@@ -124,6 +172,8 @@ pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>
     // logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(CheckGameOver)));
     logic_map.insert("ModifyPosition".to_string(), Rc::new(RefCell::new(ModifyPosition)));
     logic_map.insert("SpawnFood".to_string(), Rc::new(RefCell::new(SpawnFood)));
+    logic_map.insert("CheckIfFoodWasEaten".to_string(), Rc::new(RefCell::new(CheckIfFoodWasEaten)));
+    logic_map.insert("AlternateBetweenFoodSpriteFrames".to_string(), Rc::new(RefCell::new(AlternateBetweenFoodSpriteFrames)));
 
     logic_map
 }

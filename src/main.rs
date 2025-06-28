@@ -3,9 +3,9 @@ use std::io::{BufRead, Read};
 use winit::event_loop::EventLoop;
 use winit::monitor::MonitorHandle;
 
-use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
+use crate::state::constants::graphics::{ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
 
-use crate::state::structs::{GameState, Snake, Vector2D};
+use crate::state::structs::{Food, GameState, Snake, Vector2D};
 use crate::{
     graphics::sprites::SpriteMaps,
     state::core_logic::initialize_core_logic_map,
@@ -64,9 +64,11 @@ fn main() {
         window_height,
         window: &mut window,
         scaled_buffer: &mut scaled_buffer,
-        food: state::structs::Food {
+        food: Food {
             position: Vector2D { x: 0.0, y: 0.0 },
             is_active: false,
+            current_sprite_frame_index: 0,
+            last_sprite_frame_index_update_time: std::time::Instant::now(),
         },
     };
 
