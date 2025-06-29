@@ -26,17 +26,12 @@ fn draw_player(game_state: &mut GameState) {
 
     println!("Drawing player at position: ({}, {})", head_position.x, head_position.y);
 
-    // TODO: Must handle each direction uniquely
-
     let offset: f32 = match game_state.player.direction {
         Direction::Right => 0.0,
         Direction::Left => 10.0,
         Direction::Up => 7.0,
         Direction::Down => 0.0,
     };
-
-    let body_width = game_state.sprites.body[0].width;
-    let body_height = game_state.sprites.body[0].height;
 
     // Draw head first
     draw_sprite(
@@ -53,6 +48,18 @@ fn draw_player(game_state: &mut GameState) {
             game_state.player.body[i].x  as usize, // X position of the body segment
             game_state.player.body[i].y as usize, // Y position of the body segment
             &game_state.sprites.body[1], // Body segment sprite
+            game_state.window_buffer, // Buffer to draw on
+            ART_WIDTH // Width of art
+        );
+    }
+
+    // Tail must be drawn with different sprite frame
+    if game_state.player.body.len() > 1 {
+        let tail_position = &game_state.player.body[game_state.player.body.len() - 1];
+        draw_sprite(
+            tail_position.x as usize, // X position of the tail
+            tail_position.y as usize, // Y position of the tail
+            &game_state.sprites.body[0], // Tail sprite
             game_state.window_buffer, // Buffer to draw on
             ART_WIDTH // Width of art
         );

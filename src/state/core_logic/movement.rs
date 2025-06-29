@@ -16,11 +16,19 @@ impl CoreLogic for ModifyCoordinatesOfBodyParts {
             let body_size = game_state.player.body.len();
             if body_size > 0 {
                 // Move body segments
-                for i in (1..body_size).rev() {
-                    game_state.player.body[i] = game_state.player.body[i - 1].clone();
+                for i in 1..body_size {
+                    // Shift each body segment to the position of the previous segment
+                    // The segment at index [body_size - i] (starting from the tail) gets the value of the segment at [body_size - i - 1]
+                    // This ensures that the "neck" (second segment) gets the position of the "head" (first segment),
+                    // and each subsequent segment follows the position of the segment before it.
+                    game_state.player.body[body_size - i] = game_state.player.body[body_size - i - 1].clone();
+                    println!("Moving body segment {} to the same segment as {} at position {:?}", body_size - i, body_size - i - 1,
+                             game_state.player.body[body_size - i]);
                 }
+            }
 
-                // Move head by sprite dimensions
+
+        // Move head by sprite dimensions
                 const SPRITE_WIDTH: f32 = 6.0;
                 const SPRITE_HEIGHT: f32 = 8.0;
 
@@ -33,4 +41,3 @@ impl CoreLogic for ModifyCoordinatesOfBodyParts {
             }
         }
     }
-}
