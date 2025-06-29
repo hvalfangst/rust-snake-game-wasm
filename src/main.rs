@@ -41,7 +41,7 @@ fn main() {
 
     // Create a window with the dimensions of the primary monitor
     let mut window = Window::new(
-        "Snake",
+        "Woodworm",
         window_width,
         window_height,
         WindowOptions::default(),
@@ -64,6 +64,7 @@ fn main() {
         scaled_buffer: &mut scaled_buffer,
         delta_time: 0.0,
         last_frame_time: None,
+        game_over: false,
         food: Food {
             position: Vector2D { x: 0.0, y: 0.0 },
             is_active: false,

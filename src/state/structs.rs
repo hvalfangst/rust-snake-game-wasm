@@ -81,5 +81,6 @@ pub struct GameState<'a> {
     pub food: Food, // Food object
     pub delta_time: f32,
     pub last_frame_time: Option<Instant>,
+    pub game_over: bool
 }
 
