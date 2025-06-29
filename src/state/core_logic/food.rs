@@ -37,6 +37,7 @@ impl CoreLogic for CheckIfFoodWasEaten {
 
         if (head_position.x - food_position.x).abs() < 16.0 && (head_position.y - food_position.y).abs() < 16.0 {
             game_state.food.is_active = false;
+            game_state.score += 100;
 
             let tail_position = game_state.player.body.last().unwrap();
 

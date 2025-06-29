@@ -65,6 +65,7 @@ fn main() {
         delta_time: 0.0,
         last_frame_time: None,
         game_over: false,
+        score: 0,
         food: Food {
             position: Vector2D { x: 0.0, y: 0.0 },
             is_active: false,

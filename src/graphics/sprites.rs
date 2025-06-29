@@ -17,6 +17,7 @@ pub struct SpriteMaps {
     pub background: Vec<SpriteFrame>,
     pub food: Vec<SpriteFrame>,
     pub head: Vec<SpriteFrame>,
+    // pub numbers: Vec<SpriteFrame>, // Assuming you have a numbers sprite map
 }
 
 impl SpriteMaps {
@@ -26,6 +27,7 @@ impl SpriteMaps {
             body: load_sprites_from_map("assets/sprites/body.png", 6, 8),
             food: load_sprites_from_map("assets/sprites/food.png", 16, 16),
             head: load_sprites_from_map("assets/sprites/head.png", 16, 16),
+            // numbers: load_sprites_from_map("assets/sprites/numbers.png", 8, 8), // Assuming you have a numbers sprite map
         }
     }
 }
