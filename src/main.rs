@@ -5,18 +5,16 @@ use winit::monitor::MonitorHandle;
 
 use crate::state::constants::graphics::{ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_WINDOW_WIDTH};
 
-use crate::state::structs::{Food, GameState, Snake, Vector2D};
+use crate::state::structs::{Direction, Food, GameState, Snake, Vector2D};
 use crate::{
     graphics::sprites::SpriteMaps,
     state::core_logic::initialize_core_logic_map,
     state::event_loop::start_event_loop,
 };
-use input::handler::initialize_input_logic_map;
-use rodio::{OutputStream, Sink};
 
+use rodio::{OutputStream, Sink};
 mod state;
 mod graphics;
-
 mod input;
 
 fn main() {
@@ -25,10 +23,10 @@ fn main() {
     let mut sink = Sink::try_new(&stream_handle).unwrap();
     let sprites = SpriteMaps::new();
 
-    let mut player = Snake::new(0.0, 0.0);
+    let mut player = Snake::new(0.0, 0.0, Direction::Right);
 
 
-    let input_logic = initialize_input_logic_map();
+
     let core_logic = initialize_core_logic_map();
     let fullscreen = false;
 
@@ -64,13 +62,16 @@ fn main() {
         window_height,
         window: &mut window,
         scaled_buffer: &mut scaled_buffer,
+        delta_time: 0.0,
+        last_frame_time: None,
         food: Food {
             position: Vector2D { x: 0.0, y: 0.0 },
             is_active: false,
             current_sprite_frame_index: 0,
             last_sprite_frame_index_update_time: std::time::Instant::now(),
         },
+
     };
 
-    start_event_loop(game_state, input_logic, core_logic, &mut sink);
+    start_event_loop(game_state, core_logic, &mut sink);
 }
