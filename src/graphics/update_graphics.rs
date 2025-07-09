@@ -1,4 +1,4 @@
-use crate::graphics::sprites::draw_sprite;
+use crate::graphics::sprites::{draw_sprite, draw_sprite_with_gradient_shading};
 use crate::graphics::symbols::draw_character;
 use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
 use crate::state::structs::{Direction, GameState};
@@ -179,14 +179,43 @@ pub fn draw_background(state: &mut GameState) {
             _ => unreachable!(),
         };
 
-        // Draw the sprite with calculated offsets
-        draw_sprite(
-            offset_x,
-            offset_y,
-            layer,
-            state.window_buffer,
-            ART_WIDTH,
-            None,
-        );
+        if i == 0 {
+            // Normal draw for first layer
+            draw_sprite(
+                offset_x,
+                offset_y,
+                layer,
+                state.window_buffer,
+                ART_WIDTH,
+                None
+            );
+        } else { // Apply gradient shading based on pixel coordinates for the second layer since it's one unit
+            draw_sprite_with_gradient_shading(
+                offset_x,
+                offset_y,
+                layer,
+                state.window_buffer,
+                ART_WIDTH,
+                |_sprite_col, _sprite_row, world_x, _world_y| {
+                    let art_width_f = ART_WIDTH as f32;
+                    let x_f = world_x as f32;
+
+                    // Create smooth gradient from right side
+                    if x_f > art_width_f / 1.9 {
+                        // Calculate how far into the shaded region we are (0.0 to 1.0)
+                        let shade_start = art_width_f / 1.9;
+                        let shade_end = art_width_f / 1.7;
+                        let progress = (x_f - shade_start) / (shade_end - shade_start);
+                        let progress = progress.min(1.0).max(0.0);
+
+                        // Interpolate between 0.8 (light shade) and 0.6 (dark shade)
+                        let darkness = 0.8 - (progress * 0.2);
+                        Some(darkness)
+                    } else {
+                        None
+                    }
+                }
+            );
+        }
     }
 }
