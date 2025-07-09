@@ -20,8 +20,8 @@ impl CoreLogic for SpawnFood {
                 y: rand::rng().random_range(LOWER_BOUND_Y + 10.0..UPPER_BOUND_Y - 10.0)
             },
             is_active: true,
-            sprite_frame_index: 0,
-            last_sprite_frame_index_update_time: Instant::now(),
+            food_sprite_frame_index: 0,
+            food_last_sprite_frame_index_update_time: Instant::now(),
         };
     }
 }
@@ -39,7 +39,6 @@ impl CoreLogic for CheckIfFoodWasEaten {
 
         if (head_position.x - food_position.x).abs() < 24.0 && (head_position.y - food_position.y).abs() < 24.0 {
             game_state.player.proximity_to_food = true;
-            // println!("Proximity to food detected at: ({}, {})", head_position.x, head_position.y);
 
             if (head_position.x - food_position.x).abs() < 12.0 && (head_position.y - food_position.y).abs() < 12.0 {
                 game_state.food.is_active = false;
@@ -49,20 +48,20 @@ impl CoreLogic for CheckIfFoodWasEaten {
 
                 let new_segment = match game_state.player.direction {
                     Direction::Left => Vector2D {
-                        x: tail_position.x + SNAKE_BODY_WIDTH as f32,
+                        x: tail_position.x + SNAKE_BODY_WIDTH,
                         y: tail_position.y,
                     },
                     Direction::Right => Vector2D {
-                        x: tail_position.x - SNAKE_BODY_WIDTH as f32,
+                        x: tail_position.x - SNAKE_BODY_WIDTH,
                         y: tail_position.y,
                     },
                     Direction::Up => Vector2D {
                         x: tail_position.x,
-                        y: tail_position.y + SNAKE_BODY_HEIGHT as f32,
+                        y: tail_position.y + SNAKE_BODY_HEIGHT,
                     },
                     Direction::Down => Vector2D {
                         x: tail_position.x,
-                        y: tail_position.y - SNAKE_BODY_HEIGHT as f32,
+                        y: tail_position.y - SNAKE_BODY_HEIGHT,
                     },
                 };
 
@@ -83,9 +82,9 @@ impl CoreLogic for AlternateBetweenFoodSpriteFrames {
             return;
         }
 
-        if game_state.food.last_sprite_frame_index_update_time.elapsed().as_millis() >= 500 {
-            game_state.food.sprite_frame_index = 1 - game_state.food.sprite_frame_index;
-            game_state.food.last_sprite_frame_index_update_time = Instant::now();
+        if game_state.food.food_last_sprite_frame_index_update_time.elapsed().as_millis() >= 500 {
+            game_state.food.food_sprite_frame_index = 1 - game_state.food.food_sprite_frame_index;
+            game_state.food.food_last_sprite_frame_index_update_time = Instant::now();
         }
     }
 }

@@ -27,18 +27,13 @@ fn draw_score(game_state: &mut GameState) {
 
 fn draw_food(game_state: &mut GameState) {
     let food_x = game_state.food.position.x;
-    let darkness = match food_x {
-        x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
-        x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
-        x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
-        _ => None,
-    };
+    let darkness = calculate_darkness(food_x);
 
     // Draw the food sprite at the food's position
     draw_sprite(
         food_x as usize,
         game_state.food.position.y as usize,
-        &game_state.sprites.food[*&game_state.food.sprite_frame_index],
+        &game_state.sprites.food[*&game_state.food.food_sprite_frame_index],
         game_state.window_buffer,
         ART_WIDTH,
         darkness
@@ -48,12 +43,7 @@ fn draw_food(game_state: &mut GameState) {
 fn draw_player(game_state: &mut GameState) {
 
     let head_position = &game_state.player.body[0];
-    let darkness = match head_position.x {
-        x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
-        x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
-        x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
-        _ => None,
-    };
+    let darkness = calculate_darkness(head_position.x);
 
     // Magic number offset based on direction
     let offset: f32 = match game_state.player.direction {
@@ -77,12 +67,7 @@ fn draw_player(game_state: &mut GameState) {
     // Draw the body segments from neck to buttocks
     for i in 1..game_state.player.body.len() -1 {
         let body_x = game_state.player.body[i].x;
-        let darkness = match body_x {
-            x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
-            x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
-            x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
-            _ => None,
-        };
+        let darkness = calculate_darkness(body_x);
 
         draw_sprite(
             body_x as usize,
@@ -104,12 +89,7 @@ fn draw_player(game_state: &mut GameState) {
     let tail_index = game_state.player.body.len();
     if tail_index > 0 {
         let tail_position = &game_state.player.body[tail_index - 1];
-        let darkness = match tail_position.x {
-            x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
-            x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
-            x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
-            _ => None,
-        };
+        let darkness = calculate_darkness(tail_position.x);
         draw_sprite(
             tail_position.x as usize,
             tail_position.y as usize,
@@ -157,25 +137,23 @@ pub fn draw_background(state: &mut GameState) {
     for (i, divisor) in [12, 1].iter().enumerate() {
         // Calculate offsets for parallax effect
         let (offset_x, offset_y) = if i == 0 {
-            // Layer 0 (stars) - moves towards an x position
             (
-                state.background_offset_x / divisor, // Use the incrementing x offset
+                state.stars_offset_x / divisor,
                 0
             )
         } else {
-            // Layer 1 (space station) - static, no movement
             (0, 0)
         };
 
         // Increment the x offset for layer 0
         if i == 0 {
-            state.background_offset_x = (state.background_offset_x + 1);
+            state.stars_offset_x = (state.stars_offset_x + 1);
         }
 
         // Select the appropriate layer based on the index
         let layer = match i {
             0 => &state.sprites.layer_0[state.stars_sprite_frame_index],
-            1 => &state.sprites.layer_1[state.background_sprite_frame_index],
+            1 => &state.sprites.layer_1[state.globe_sprite_frame_index],
             _ => unreachable!(),
         };
 
@@ -217,5 +195,23 @@ pub fn draw_background(state: &mut GameState) {
                 }
             );
         }
+    }
+}
+
+/// Calculates the darkness level for a given x-coordinate based on its position
+/// relative to the screen width.
+///
+/// # Parameters
+/// - `x`: The x-coordinate as a `f32`.
+///
+/// # Returns
+/// - `Option<f32>`: A darkness value between 0.6 and 0.8 if the x-coordinate falls
+///   within specific ranges, or `None` if no darkness should be applied.
+fn calculate_darkness(x: f32) -> Option<f32> {
+    match x {
+        x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
+        x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
+        x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
+        _ => None,
     }
 }

@@ -13,7 +13,6 @@ impl CoreLogic for CheckGameOver {
             let mut frame = 0;
 
             while frame < 8 {
-                println!("Game Over! Frame: {}", frame);
                 draw_game_over_screen(game_state, frame);
                 render_pixel_buffer(game_state);
 
