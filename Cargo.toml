@@ -1,5 +1,5 @@
 [package]
-name = "snake_game"
+name = "space_wurm"
 version = "0.5.0"
 edition = "2021"
 
@@ -12,6 +12,6 @@ rand = "0.9.1"
 log = "0.4.27"
 
 [[bin]]
-name = "snake_game"
+name = "space_wurm"
 path = "src/main.rs"
 

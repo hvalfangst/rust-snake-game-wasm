@@ -174,8 +174,8 @@ pub fn draw_background(state: &mut GameState) {
 
         // Select the appropriate layer based on the index
         let layer = match i {
-            0 => &state.sprites.layer_0[0],
-            1 => &state.sprites.layer_1[0],
+            0 => &state.sprites.layer_0[state.stars_sprite_frame_index],
+            1 => &state.sprites.layer_1[state.background_sprite_frame_index],
             _ => unreachable!(),
         };
 

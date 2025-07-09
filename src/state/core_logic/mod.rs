@@ -52,7 +52,9 @@ pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>
     logic_map.insert("AlternateHeadSpriteFrameIndex".to_string(), Rc::new(RefCell::new(snake::AlternateHeadSpriteFrameIndex)));
 
     // Background sprite frame
-    logic_map.insert("AlternateBackgroundSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateBackgroundSpriteFrame)));
+    logic_map.insert("AlternateBackgroundSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateGlobeSpriteFrame)));
+
+    logic_map.insert("AlternateStarsSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateStarsSpriteFrame)));
 
     logic_map
 }

@@ -99,9 +99,9 @@ pub struct GameState<'a> {
     pub score: u32, // Score of the game
     pub background_sprite_frame_index: usize,
     pub background_last_sprite_frame_update_time: Instant,
-    pub layer_3_sprite_frame_index: usize, // Index of the current sprite for layer 3
-    pub layer_3_last_sprite_frame_update_time: Instant, // Track the last update time for layer 3
-    pub background_offset_x: usize
+    pub background_offset_x: usize,
+    pub stars_last_sprite_frame_update_time: Instant,
+    pub stars_sprite_frame_index: usize,
 }
 
 impl<'a> GameState<'a> {
@@ -134,9 +134,9 @@ impl<'a> GameState<'a> {
                 last_sprite_frame_index_update_time: Instant::now(),
             },
             background_last_sprite_frame_update_time: Instant::now(),
-            layer_3_sprite_frame_index: 0, // Initialize layer 3 sprite frame index
-            layer_3_last_sprite_frame_update_time: Instant::now(), // Initialize layer 3 last sprite frame update time
             background_offset_x: 0, // Initialize background offset
+            stars_last_sprite_frame_update_time: Instant::now(),
+            stars_sprite_frame_index: 0, // Initialize stars sprite frame index
         }
     }
 
