@@ -27,6 +27,13 @@ fn draw_score(game_state: &mut GameState) {
 
 fn draw_food(game_state: &mut GameState) {
     let food_x = game_state.food.position.x;
+    let darkness = match food_x {
+        x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
+        x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
+        x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
+        _ => None,
+    };
+
     // Draw the food sprite at the food's position
     draw_sprite(
         food_x as usize,
@@ -34,13 +41,19 @@ fn draw_food(game_state: &mut GameState) {
         &game_state.sprites.food[*&game_state.food.sprite_frame_index],
         game_state.window_buffer,
         ART_WIDTH,
-        food_x > ART_WIDTH as f32 / 2.0
+        darkness
     );
 }
 
 fn draw_player(game_state: &mut GameState) {
 
     let head_position = &game_state.player.body[0];
+    let darkness = match head_position.x {
+        x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
+        x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
+        x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
+        _ => None,
+    };
 
     // Magic number offset based on direction
     let offset: f32 = match game_state.player.direction {
@@ -57,13 +70,19 @@ fn draw_player(game_state: &mut GameState) {
         &game_state.sprites.head[game_state.player.head_sprite_frame_index],
         game_state.window_buffer,
         ART_WIDTH,
-        head_position.x > ART_WIDTH as f32 / 2.0
+        darkness
     );
 
 
     // Draw the body segments from neck to buttocks
     for i in 1..game_state.player.body.len() -1 {
         let body_x = game_state.player.body[i].x;
+        let darkness = match body_x {
+            x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
+            x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
+            x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
+            _ => None,
+        };
 
         draw_sprite(
             body_x as usize,
@@ -71,7 +90,7 @@ fn draw_player(game_state: &mut GameState) {
             &game_state.sprites.body[game_state.player.body_sprite_frame_index],
             game_state.window_buffer,
             ART_WIDTH,
-            body_x > ART_WIDTH as f32 / 2.0
+            darkness
         );
     }
 
@@ -85,13 +104,19 @@ fn draw_player(game_state: &mut GameState) {
     let tail_index = game_state.player.body.len();
     if tail_index > 0 {
         let tail_position = &game_state.player.body[tail_index - 1];
+        let darkness = match tail_position.x {
+            x if x > ART_WIDTH as f32 / 1.7 => Some(0.6),
+            x if x > ART_WIDTH as f32 / 1.8 => Some(0.7),
+            x if x > ART_WIDTH as f32 / 1.9 => Some(0.8),
+            _ => None,
+        };
         draw_sprite(
             tail_position.x as usize,
             tail_position.y as usize,
             &game_state.sprites.tail[tail_sprite_index],
             game_state.window_buffer,
             ART_WIDTH,
-            tail_position.x > ART_WIDTH as f32 / 2.0
+            darkness
         );
     }
 }
@@ -103,7 +128,7 @@ pub fn draw_game_over_screen(game_state: &mut GameState, index: usize) {
         &game_state.sprites.game_over_screen[index],
         game_state.window_buffer,
         ART_WIDTH,
-        false
+        None
     );
 
     // Draw the score underneath the "Game Over" screen
@@ -125,7 +150,7 @@ pub fn draw_background(state: &mut GameState) {
         &state.sprites.blue_strip[0],
         state.window_buffer,
         ART_WIDTH,
-        false
+        None
     );
 
     // Loop through the layers and draw them based on the player's position
@@ -156,12 +181,12 @@ pub fn draw_background(state: &mut GameState) {
 
         // Draw the sprite with calculated offsets
         draw_sprite(
-            offset_x,  // Just pass the offset directly
-            offset_y,  // Just pass the offset directly
+            offset_x,
+            offset_y,
             layer,
             state.window_buffer,
             ART_WIDTH,
-            false,
+            None,
         );
     }
 }

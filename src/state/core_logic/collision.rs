@@ -1,6 +1,7 @@
 use crate::state::core_logic::CoreLogic;
 use crate::state::structs::GameState;
 use rodio::Sink;
+use crate::state::constants::physics::COLLISION_TOLERANCE;
 
 pub struct CheckSelfCollision;
 
@@ -12,7 +13,7 @@ impl CoreLogic for CheckSelfCollision {
 
         let head_position = &game_state.player.body[0];
 
-        // Check if head collides with any body segment (starting from index 1)
+        // Check if head collides with segment (starting from index 1)
         for i in 1..game_state.player.body.len() {
             let body_segment = &game_state.player.body[i];
 
@@ -29,8 +30,6 @@ impl CoreLogic for CheckSelfCollision {
 impl CheckSelfCollision {
     fn positions_overlap(pos1: &crate::state::structs::Vector2D, pos2: &crate::state::structs::Vector2D) -> bool {
         // Since we're using exact grid movement, check for exact position match
-        const COLLISION_TOLERANCE: f32 = 1.0; // Small tolerance for floating point precision
-
         (pos1.x - pos2.x).abs() < COLLISION_TOLERANCE && (pos1.y - pos2.y).abs() < COLLISION_TOLERANCE
     }
 }

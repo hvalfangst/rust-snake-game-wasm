@@ -12,9 +12,9 @@ impl CoreLogic for VerticalBounds {
 
         // Wrap vertically with sprite height consideration
         if head.y < LOWER_BOUND_Y {
-            head.y = UPPER_BOUND_Y - SNAKE_BODY_HEIGHT as f32; // Appear at top
+            head.y = UPPER_BOUND_Y - SNAKE_BODY_HEIGHT; // Appear at top
         } else if head.y > UPPER_BOUND_Y {
-            head.y = LOWER_BOUND_Y + SNAKE_BODY_HEIGHT as f32; // Appear at bottom
+            head.y = LOWER_BOUND_Y + SNAKE_BODY_HEIGHT; // Appear at bottom
         }
     }
 }
@@ -27,9 +27,9 @@ impl CoreLogic for HorizontalBounds {
 
         // Wrap horizontally with sprite width consideration
         if head.x < LOWER_BOUND_X {
-            head.x = UPPER_BOUND_X - SNAKE_BODY_WIDTH as f32; // Appear at right
+            head.x = UPPER_BOUND_X - SNAKE_BODY_WIDTH; // Appear at right
         } else if head.x > UPPER_BOUND_X {
-            head.x = LOWER_BOUND_X + SNAKE_BODY_WIDTH as f32; // Appear at left
+            head.x = LOWER_BOUND_X + SNAKE_BODY_WIDTH; // Appear at left
         }
     }
 }

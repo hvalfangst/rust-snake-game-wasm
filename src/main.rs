@@ -38,7 +38,7 @@ fn main() {
 
     // Create a window with the dimensions of the primary monitor
     let mut window = Window::new(
-        "Woodworm",
+        "Intergalactic Woodworm",
         window_width,
         window_height,
         WindowOptions::default(),

@@ -21,7 +21,7 @@ impl CoreLogic for SpawnFood {
             },
             is_active: true,
             sprite_frame_index: 0,
-            last_sprite_frame_index_update_time: std::time::Instant::now(),
+            last_sprite_frame_index_update_time: Instant::now(),
         };
     }
 }

@@ -32,23 +32,23 @@ impl Snake {
         let body = match initial_direction {
             Direction::Right => vec![
                 Vector2D { x, y },
-                Vector2D { x: x - SNAKE_BODY_WIDTH as f32 * 2.0, y },
-                Vector2D { x: x - SNAKE_BODY_WIDTH as f32 * 3.0, y },
+                Vector2D { x: x - SNAKE_BODY_WIDTH * 2.0, y },
+                Vector2D { x: x - SNAKE_BODY_WIDTH * 3.0, y },
             ],
             Direction::Left => vec![
                 Vector2D { x, y },
-                Vector2D { x: x + SNAKE_BODY_WIDTH as f32 * 2.0, y },
-                Vector2D { x: x + SNAKE_BODY_WIDTH as f32 * 3.0, y },
+                Vector2D { x: x + SNAKE_BODY_WIDTH * 2.0, y },
+                Vector2D { x: x + SNAKE_BODY_WIDTH * 3.0, y },
             ],
             Direction::Down => vec![
                 Vector2D { x, y },
-                Vector2D { x, y: y - SNAKE_BODY_HEIGHT as f32 * 2.0 },
-                Vector2D { x, y: y - SNAKE_BODY_HEIGHT as f32 * 3.0 },
+                Vector2D { x, y: y - SNAKE_BODY_HEIGHT * 2.0 },
+                Vector2D { x, y: y - SNAKE_BODY_HEIGHT * 3.0 },
             ],
             Direction::Up => vec![
                 Vector2D { x, y },
-                Vector2D { x, y: y + SNAKE_BODY_HEIGHT as f32 * 2.0 },
-                Vector2D { x, y: y + SNAKE_BODY_HEIGHT as f32 * 3.0 },
+                Vector2D { x, y: y + SNAKE_BODY_HEIGHT * 2.0 },
+                Vector2D { x, y: y + SNAKE_BODY_HEIGHT * 3.0 },
             ],
         };
 

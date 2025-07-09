@@ -152,7 +152,7 @@ pub fn draw_sprite(
     sprite: &SpriteFrame,
     window_buffer: &mut [u32],
     window_width: usize,
-    darken: bool
+    darkness_factor: Option<f32> // None = no darkening, Some(0.5) = 50% darker
 ) {
     for row in 0..sprite.height as usize {
         for col in 0..sprite.width as usize {
@@ -162,13 +162,17 @@ pub fn draw_sprite(
             if window_pixel_index < window_buffer.len() {
                 let mut sprite_pixel = sprite.data[sprite_pixel_index];
 
-                // Apply darkening before alpha blending
-                if darken {
+                // Apply darkening if specified
+                if let Some(factor) = darkness_factor {
                     let alpha = (sprite_pixel >> 24) & 0xFF;
-                    let r = ((sprite_pixel >> 16) & 0xFF) / 2; // Darken by 50%
-                    let g = ((sprite_pixel >> 8) & 0xFF) / 2;
-                    let b = (sprite_pixel & 0xFF) / 2;
-                    sprite_pixel = (alpha << 24) | (r << 16) | (g << 8) | b;
+                    let r = ((sprite_pixel >> 16) & 0xFF) as f32 * factor;
+                    let g = ((sprite_pixel >> 8) & 0xFF) as f32 * factor;
+                    let b = (sprite_pixel & 0xFF) as f32 * factor;
+
+                    sprite_pixel = (alpha << 24) |
+                        ((r as u32).min(255) << 16) |
+                        ((g as u32).min(255) << 8) |
+                        (b as u32).min(255);
                 }
 
                 let sprite_alpha = (sprite_pixel >> 24) & 0xFF;
