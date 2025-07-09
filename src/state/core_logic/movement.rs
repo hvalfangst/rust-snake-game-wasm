@@ -1,5 +1,6 @@
 use crate::state::structs::{Direction, GameState};
 use rodio::Sink;
+use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 use crate::state::core_logic::CoreLogic;
 
 pub struct ModifyCoordinatesOfBodyParts;
@@ -24,17 +25,11 @@ impl CoreLogic for ModifyCoordinatesOfBodyParts {
                     game_state.player.body[body_size - i] = game_state.player.body[body_size - i - 1].clone();
                 }
             }
-
-
-                 // Move head by sprite dimensions
-                const SPRITE_WIDTH: f32 = 6.0;
-                const SPRITE_HEIGHT: f32 = 8.0;
-
                 match game_state.player.direction {
-                    Direction::Left => game_state.player.body[0].x -= SPRITE_WIDTH,
-                    Direction::Right => game_state.player.body[0].x += SPRITE_WIDTH,
-                    Direction::Up => game_state.player.body[0].y -= SPRITE_HEIGHT,
-                    Direction::Down => game_state.player.body[0].y += SPRITE_HEIGHT,
+                    Direction::Left => game_state.player.body[0].x -= SNAKE_BODY_WIDTH,
+                    Direction::Right => game_state.player.body[0].x += SNAKE_BODY_WIDTH,
+                    Direction::Up => game_state.player.body[0].y -= SNAKE_BODY_HEIGHT,
+                    Direction::Down => game_state.player.body[0].y += SNAKE_BODY_HEIGHT,
                 }
             }
         }

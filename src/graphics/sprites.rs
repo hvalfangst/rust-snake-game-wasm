@@ -146,31 +146,43 @@ pub fn img_to_buffer(img: &image::DynamicImage) -> Vec<u32> {
 /// let mut window_buffer = vec![0xFFFFFFFF; 800 * 600]; // A white 800x600 window buffer
 /// draw_sprite(10, 10, &sprite, &mut window_buffer, 800);
 /// ```
-pub fn draw_sprite(x: usize, y: usize, sprite: &SpriteFrame, window_buffer: &mut [u32], window_width: usize) {
-
+pub fn draw_sprite(
+    x: usize,
+    y: usize,
+    sprite: &SpriteFrame,
+    window_buffer: &mut [u32],
+    window_width: usize,
+    darken: bool
+) {
     for row in 0..sprite.height as usize {
         for col in 0..sprite.width as usize {
             let sprite_pixel_index = row * (sprite.width as usize) + col;
             let window_pixel_index = (y + row) * window_width + (x + col);
 
             if window_pixel_index < window_buffer.len() {
-                let sprite_pixel = sprite.data[sprite_pixel_index];
-                let sprite_alpha = (sprite_pixel >> 24) & 0xFF; // Extract alpha channel from sprite pixel
-                let sprite_rgb = sprite_pixel & 0x00FFFFFF; // Extract RGB channels from sprite pixel
+                let mut sprite_pixel = sprite.data[sprite_pixel_index];
 
-                if sprite_alpha > 0 { // Only blend if the pixel is not fully transparent
+                // Apply darkening before alpha blending
+                if darken {
+                    let alpha = (sprite_pixel >> 24) & 0xFF;
+                    let r = ((sprite_pixel >> 16) & 0xFF) / 2; // Darken by 50%
+                    let g = ((sprite_pixel >> 8) & 0xFF) / 2;
+                    let b = (sprite_pixel & 0xFF) / 2;
+                    sprite_pixel = (alpha << 24) | (r << 16) | (g << 8) | b;
+                }
+
+                let sprite_alpha = (sprite_pixel >> 24) & 0xFF;
+                let sprite_rgb = sprite_pixel & 0x00FFFFFF;
+
+                if sprite_alpha > 0 {
                     let window_pixel = window_buffer[window_pixel_index];
-                    let window_rgb = window_pixel & 0x00FFFFFF; // Extract RGB channels from window buffer pixel
+                    let window_rgb = window_pixel & 0x00FFFFFF;
 
-                    // Calculate blended color using alpha blending formula
                     let blended_r = ((sprite_rgb >> 16) & 0xFF) * sprite_alpha / 255 + ((window_rgb >> 16) & 0xFF) * (255 - sprite_alpha) / 255;
                     let blended_g = ((sprite_rgb >> 8) & 0xFF) * sprite_alpha / 255 + ((window_rgb >> 8) & 0xFF) * (255 - sprite_alpha) / 255;
                     let blended_b = (sprite_rgb & 0xFF) * sprite_alpha / 255 + (window_rgb & 0xFF) * (255 - sprite_alpha) / 255;
 
-                    // Combine blended color with full alpha
                     let blended_pixel = 0xFF000000 | (blended_r & 0xFF) << 16 | (blended_g & 0xFF) << 8 | (blended_b & 0xFF);
-
-                    // Assign the blended pixel to the window buffer
                     window_buffer[window_pixel_index] = blended_pixel;
                 }
             }

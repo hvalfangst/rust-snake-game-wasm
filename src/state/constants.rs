@@ -4,8 +4,8 @@ pub mod graphics {
     pub const SCALED_WINDOW_HEIGHT: usize = 540;
     pub const ART_WIDTH: usize = 256;
     pub const ART_HEIGHT: usize = 224;
-    pub const SNAKE_BODY_WIDTH: usize = 6;
-    pub const SNAKE_BODY_HEIGHT: usize = 6;
+    pub const SNAKE_BODY_WIDTH: f32 = 6.0;
+    pub const SNAKE_BODY_HEIGHT: f32 = 8.0;
 }
 
 pub mod physics {

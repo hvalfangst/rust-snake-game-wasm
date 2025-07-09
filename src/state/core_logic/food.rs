@@ -39,7 +39,7 @@ impl CoreLogic for CheckIfFoodWasEaten {
 
         if (head_position.x - food_position.x).abs() < 24.0 && (head_position.y - food_position.y).abs() < 24.0 {
             game_state.player.proximity_to_food = true;
-            println!("Proximity to food detected at: ({}, {})", head_position.x, head_position.y);
+            // println!("Proximity to food detected at: ({}, {})", head_position.x, head_position.y);
 
             if (head_position.x - food_position.x).abs() < 12.0 && (head_position.y - food_position.y).abs() < 12.0 {
                 game_state.food.is_active = false;

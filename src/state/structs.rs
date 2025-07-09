@@ -101,6 +101,7 @@ pub struct GameState<'a> {
     pub background_last_sprite_frame_update_time: Instant,
     pub layer_3_sprite_frame_index: usize, // Index of the current sprite for layer 3
     pub layer_3_last_sprite_frame_update_time: Instant, // Track the last update time for layer 3
+    pub background_offset_x: usize
 }
 
 impl<'a> GameState<'a> {
@@ -135,6 +136,7 @@ impl<'a> GameState<'a> {
             background_last_sprite_frame_update_time: Instant::now(),
             layer_3_sprite_frame_index: 0, // Initialize layer 3 sprite frame index
             layer_3_last_sprite_frame_update_time: Instant::now(), // Initialize layer 3 last sprite frame update time
+            background_offset_x: 0, // Initialize background offset
         }
     }
 

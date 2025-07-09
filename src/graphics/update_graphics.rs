@@ -1,13 +1,13 @@
 use crate::graphics::sprites::draw_sprite;
+use crate::graphics::symbols::draw_character;
 use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
 use crate::state::structs::{Direction, GameState};
 
 pub fn update_pixel_buffer(game_state: &mut GameState) {
-    draw_game_world(game_state);
+    draw_background(game_state);
     draw_food(game_state);
     draw_player(game_state);
     draw_score(game_state);
-
 }
 
 fn draw_score(game_state: &mut GameState) {
@@ -25,138 +25,16 @@ fn draw_score(game_state: &mut GameState) {
     }
 }
 
-fn draw_character(ch: char, x: usize, y: usize, game_state: &mut GameState) {
-
-
-    let pattern = match ch {
-        '0' => [
-            0b011110,
-            0b100001,
-            0b100011,
-            0b101101,
-            0b110001,
-            0b100001,
-            0b011110,
-            0b000000,
-        ],
-        '1' => [
-            0b001100,
-            0b011100,
-            0b001100,
-            0b001100,
-            0b001100,
-            0b001100,
-            0b111111,
-            0b000000,
-        ],
-        '2' => [
-            0b011110,
-            0b100001,
-            0b000001,
-            0b000110,
-            0b011000,
-            0b100000,
-            0b111111,
-            0b000000,
-        ],
-        '3' => [
-            0b011110,
-            0b100001,
-            0b000001,
-            0b001110,
-            0b000001,
-            0b100001,
-            0b011110,
-            0b000000,
-        ],
-        '4' => [
-            0b000110,
-            0b001110,
-            0b010110,
-            0b100110,
-            0b111111,
-            0b000110,
-            0b000110,
-            0b000000,
-        ],
-        '5' => [
-            0b111111,
-            0b100000,
-            0b111110,
-            0b000001,
-            0b000001,
-            0b100001,
-            0b011110,
-            0b000000,
-        ],
-        '6' => [
-            0b011110,
-            0b100000,
-            0b100000,
-            0b111110,
-            0b100001,
-            0b100001,
-            0b011110,
-            0b000000,
-        ],
-        '7' => [
-            0b111111,
-            0b000001,
-            0b000010,
-            0b000100,
-            0b001000,
-            0b010000,
-            0b100000,
-            0b000000,
-        ],
-        '8' => [
-            0b011110,
-            0b100001,
-            0b100001,
-            0b011110,
-            0b100001,
-            0b100001,
-            0b011110,
-            0b000000,
-        ],
-        '9' => [
-            0b011110,
-            0b100001,
-            0b100001,
-            0b011111,
-            0b000001,
-            0b000001,
-            0b011110,
-            0b000000,
-        ],
-        _ => [0; 8],
-    };
-
-    for (row, &pattern_row) in pattern.iter().enumerate() {
-        for col in 0..6 {
-            if (pattern_row >> (5 - col)) & 1 == 1 {
-                let pixel_x = x + col;
-                let pixel_y = y + row;
-
-                if pixel_x < ART_WIDTH && pixel_y < ART_HEIGHT {
-                    let index = pixel_y * ART_WIDTH + pixel_x;
-                    if index < game_state.window_buffer.len() {
-                        game_state.window_buffer[index] = 0xFFFFFF; // White pixel
-                    }
-                }
-            }
-        }
-    }
-}
-
 fn draw_food(game_state: &mut GameState) {
+    let food_x = game_state.food.position.x;
     // Draw the food sprite at the food's position
     draw_sprite(
-        game_state.food.position.x as usize, // X position of the food
-        game_state.food.position.y as usize, // Y position of the food
-        &game_state.sprites.food[*&game_state.food.sprite_frame_index], // Food sprite
-        game_state.window_buffer, // Buffer to draw on
-        ART_WIDTH // Width of art
+        food_x as usize,
+        game_state.food.position.y as usize,
+        &game_state.sprites.food[*&game_state.food.sprite_frame_index],
+        game_state.window_buffer,
+        ART_WIDTH,
+        food_x > ART_WIDTH as f32 / 2.0
     );
 }
 
@@ -164,8 +42,7 @@ fn draw_player(game_state: &mut GameState) {
 
     let head_position = &game_state.player.body[0];
 
-    // println!("Drawing player at position: ({}, {})", head_position.x, head_position.y);
-
+    // Magic number offset based on direction
     let offset: f32 = match game_state.player.direction {
         Direction::Right => 0.0,
         Direction::Left => 10.0,
@@ -175,61 +52,58 @@ fn draw_player(game_state: &mut GameState) {
 
     // Draw head first
     draw_sprite(
-        (head_position.x - offset) as usize, // X position of the head
-        (head_position.y - offset) as usize, // Y position of the head
-        &game_state.sprites.head[game_state.player.head_sprite_frame_index], // Head sprite
-        game_state.window_buffer, // Buffer to draw on
-        ART_WIDTH // Width of art
+        (head_position.x - offset) as usize,
+        (head_position.y - offset) as usize,
+        &game_state.sprites.head[game_state.player.head_sprite_frame_index],
+        game_state.window_buffer,
+        ART_WIDTH,
+        head_position.x > ART_WIDTH as f32 / 2.0
     );
+
 
     // Draw the body segments from neck to buttocks
     for i in 1..game_state.player.body.len() -1 {
+        let body_x = game_state.player.body[i].x;
+
         draw_sprite(
-            game_state.player.body[i].x  as usize, // X position of the body segment
-            game_state.player.body[i].y as usize, // Y position of the body segment
-            &game_state.sprites.body[game_state.player.body_sprite_frame_index], // Body segment sprite
-            game_state.window_buffer, // Buffer to draw on
-            ART_WIDTH // Width of art
+            body_x as usize,
+            game_state.player.body[i].y as usize,
+            &game_state.sprites.body[game_state.player.body_sprite_frame_index],
+            game_state.window_buffer,
+            ART_WIDTH,
+            body_x > ART_WIDTH as f32 / 2.0
         );
     }
 
     // For right and up we draw the first tail sprite frame, left and down we draw the second tail sprite frame
     let tail_sprite_index = if game_state.player.direction == Direction::Right || game_state.player.direction == Direction::Up {
-        0 // First tail sprite frame
+        0
     } else {
-        1 // Second tail sprite frame
+        1
     };
 
     let tail_index = game_state.player.body.len();
     if tail_index > 0 {
         let tail_position = &game_state.player.body[tail_index - 1];
         draw_sprite(
-            tail_position.x as usize, // X position of the tail
-            tail_position.y as usize, // Y position of the tail
-            &game_state.sprites.tail[tail_sprite_index], // Tail sprite
-            game_state.window_buffer, // Buffer to draw on
-            ART_WIDTH // Width of art
+            tail_position.x as usize,
+            tail_position.y as usize,
+            &game_state.sprites.tail[tail_sprite_index],
+            game_state.window_buffer,
+            ART_WIDTH,
+            tail_position.x > ART_WIDTH as f32 / 2.0
         );
     }
 }
 
-// fn draw_game_world(game_state: &mut GameState) {
-//     draw_sprite(
-//         0, // X position of the sprite
-//         0, // Y position of the sprite
-//         &game_state.sprites.background[game_state.background_sprite_frame_index], // Background sprite
-//         game_state.window_buffer, // Buffer to draw on
-//         ART_WIDTH // Width of art
-//     );
-// }
-
 pub fn draw_game_over_screen(game_state: &mut GameState, index: usize) {
     draw_sprite(
-        0, // X position of the sprite
-        0, // Y position of the sprite
+        0,
+        0,
         &game_state.sprites.game_over_screen[index],
-        game_state.window_buffer, // Buffer to draw on
-        ART_WIDTH // Width of art
+        game_state.window_buffer,
+        ART_WIDTH,
+        false
     );
 
     // Draw the score underneath the "Game Over" screen
@@ -242,36 +116,36 @@ pub fn draw_game_over_screen(game_state: &mut GameState, index: usize) {
 }
 
 
-pub fn draw_game_world(state: &mut GameState) {
-    let texture_width = ART_WIDTH;
-    let texture_height = ART_HEIGHT;
+pub fn draw_background(state: &mut GameState) {
 
-    //  // Always draw the static background layer first in order to fill all pixels as the parallax effect can result in empty pixels
-
-    // Draw the static background layer (space station)
-
-    // Just paint a strip blue on top
+    // Always first draw a subset (the top 200 pixels) of our background in order to mitigate void spots
     draw_sprite(
-        0, // X position of the sprite
-        0, // Y position of the sprite
-        &state.sprites.blue_strip[0], // Static background layer (space station)
-        state.window_buffer, // Buffer to draw on
-        ART_WIDTH // Width of art
+        0,
+        0,
+        &state.sprites.blue_strip[0],
+        state.window_buffer,
+        ART_WIDTH,
+        false
     );
 
     // Loop through the layers and draw them based on the player's position
-    for (i, divisor) in [6, 1].iter().enumerate() {
+    for (i, divisor) in [12, 1].iter().enumerate() {
         // Calculate offsets for parallax effect
         let (offset_x, offset_y) = if i == 0 {
-            // Layer 0 (stars) - moves with parallax
+            // Layer 0 (stars) - moves towards an x position
             (
-                state.player.body[0].x as usize / divisor % texture_width,
-                state.player.body[0].y as usize / divisor % texture_height
+                state.background_offset_x / divisor, // Use the incrementing x offset
+                0
             )
         } else {
             // Layer 1 (space station) - static, no movement
             (0, 0)
         };
+
+        // Increment the x offset for layer 0
+        if i == 0 {
+            state.background_offset_x = (state.background_offset_x + 1);
+        }
 
         // Select the appropriate layer based on the index
         let layer = match i {
@@ -287,6 +161,7 @@ pub fn draw_game_world(state: &mut GameState) {
             layer,
             state.window_buffer,
             ART_WIDTH,
+            false,
         );
     }
 }
