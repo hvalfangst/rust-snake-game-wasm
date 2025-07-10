@@ -58,19 +58,11 @@ impl CoreLogic for CheckNewPerk {
 
                     match game_state.selected_perk {
                         Some(1) => {
-                            // 25% Speed Boost
-                            println!(
-                                "Perk 1 selected: Speed boost: before: {:.2} moves/sec, after: {:.2} moves/sec",
-                                1.0 / game_state.player.move_interval,
-                                1.0 / (game_state.player.move_interval * 0.8)
-                            );
                             game_state.player.move_interval *= 0.8;
                             game_state.perk_history.insert(game_state.score, Perk::SpeedBoost);
                         },
                         Some(2) => {
-                            // Double score awarded for consuming food
-                            println!("Perk 2 selected: Double score for food consumption: before: {}, after: {}", game_state.food_score_value, game_state.food_score_value * 2);
-                            game_state.food_score_value *= 2;
+                             game_state.food_score_value *= 2;
                             game_state.perk_history.insert(game_state.score, Perk::DoubleScore);
                         }
                         _ => {}

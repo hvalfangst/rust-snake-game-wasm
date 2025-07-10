@@ -19,7 +19,6 @@ impl CoreLogic for CheckSelfCollision {
 
             // Check if head position overlaps with this body segment
             if Self::positions_overlap(head_position, body_segment) {
-                println!("Game Over! Snake collided with itself at segment {}", i);
                 game_state.game_over = true;
                 return;
             }

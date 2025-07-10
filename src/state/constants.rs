@@ -16,3 +16,11 @@ pub mod physics {
     pub const COLLISION_TOLERANCE: f32 = 1.0;
 }
 
+pub mod text {
+    pub const SCORE: &str = "Score: ";
+    pub const SELECT_PERK: &str = "Select Perk";
+    pub const PERK_NEED_4_SPEED: (&str, &str) = ("Need 4 Speed", "+25% movement speed");
+    pub const PERK_HUNGRY_WORM: (&str, &str) = ("Hungry Worm", "2x score from food");
+    pub const PERK_CURSE_OF_GLOSSY: (&str, &str) = ("Curse of Glossy", "Death by shiny things");
+}
+

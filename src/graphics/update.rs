@@ -1,6 +1,7 @@
 use crate::graphics::sprites::{draw_sprite, draw_sprite_with_gradient_shading};
 use crate::graphics::text::{get_font_data, BitFont};
 use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
+use crate::state::constants::text::{PERK_CURSE_OF_GLOSSY, PERK_HUNGRY_WORM, PERK_NEED_4_SPEED, SCORE, SELECT_PERK};
 use crate::state::structs::{Direction, GameState};
 
 pub fn update_pixel_buffer(game_state: &mut GameState) {
@@ -115,7 +116,7 @@ pub fn draw_game_over_screen(game_state: &mut GameState, index: usize, darkness_
     );
 
     // Draw the score underneath the "Game Over" screen
-    let score_text = format!("Score: {}", game_state.score);
+    let score_text = format!("{}{}", SCORE, game_state.score);
     let x_position = (ART_WIDTH as i32/ 2) - (score_text.len() as i32 * 4); // Adjust for centering
     let y_position = ART_HEIGHT - 20; // Position near the bottom
     let font_data = get_font_data();
@@ -135,18 +136,14 @@ pub fn draw_choose_perk_screen_with_highlight(game_state: &mut GameState, highli
         None
     );
 
+    // Get the font data for drawing text
     let font_data = get_font_data();
 
     // Create a BitFont instance
     let bit_font = BitFont { chars: font_data };
 
-
-    // Draw a single character
-    bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, "Select perk", 57, 25, 0xFFFFFF, 1.7); // White color
-
-    // Draw a string of text
-    // bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, "ABB CBA", 59, 20, 0xFF0000, 4.0); // Red color
-
+    // Draw the "Select perk" text at the top of the screen
+    bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, SELECT_PERK, 57, 25, 0xFFFFFF, 1.7); // White color
 
     // Designate the bottom part of the perk screen which shows the two available perks
     let perk_positions = [
@@ -178,6 +175,38 @@ pub fn draw_choose_perk_screen_with_highlight(game_state: &mut GameState, highli
                 darkness_factor,
             );
         }
+    }
+
+    // Must also draw information about the perk which is highlighted
+
+    if let Some(perk_index) = highlighted_perk {
+        let perk_info = match perk_index {
+            1 => PERK_NEED_4_SPEED,
+            2 => PERK_HUNGRY_WORM,
+            _ => PERK_CURSE_OF_GLOSSY,
+        };
+
+        // Draw the first line of perk information
+        bit_font.draw_text_smooth_scaled(
+            &mut game_state.window_buffer,
+            ART_WIDTH,
+            perk_info.0,
+            75, // X position
+            55, // Y position
+            0xFFD700, // Golden color
+            1.0 // Scale
+        );
+
+        // Draw the second line of perk information
+        bit_font.draw_text_smooth_scaled(
+            &mut game_state.window_buffer,
+            ART_WIDTH,
+            perk_info.1,
+            52, // X position
+            69, // Y position
+            0xCCCCCC, // Slightly grey color
+            1.0 // Scale
+        );
     }
 }
 
