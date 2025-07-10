@@ -1,5 +1,5 @@
 use crate::graphics::sprites::{draw_sprite, draw_sprite_with_gradient_shading};
-use crate::graphics::symbols::draw_character;
+use crate::graphics::text::{get_font_data, BitFont};
 use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
 use crate::state::structs::{Direction, GameState};
 
@@ -21,7 +21,9 @@ fn draw_score(game_state: &mut GameState) {
 
     for (i, ch) in score_text.chars().enumerate() {
         let x_pos = start_x + (i * (char_width + char_spacing));
-        draw_character(ch, x_pos, start_y, game_state);
+        let font_data = get_font_data();
+        let bit_font = BitFont { chars: font_data };
+        bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, &ch.to_string(), x_pos as i32, start_y, 0xFFFFFF, 1.0);
     }
 }
 
@@ -101,23 +103,24 @@ fn draw_player(game_state: &mut GameState) {
     }
 }
 
-pub fn draw_game_over_screen(game_state: &mut GameState, index: usize) {
+pub fn draw_game_over_screen(game_state: &mut GameState, index: usize, darkness_factor: Option<f32>) {
+
     draw_sprite(
         0,
         0,
         &game_state.sprites.game_over_screen[index],
         game_state.window_buffer,
         ART_WIDTH,
-        None
+        darkness_factor
     );
 
     // Draw the score underneath the "Game Over" screen
     let score_text = format!("Score: {}", game_state.score);
-    let x_position = (ART_WIDTH / 3) - (score_text.len() * 6 / 2); // Center the text
+    let x_position = (ART_WIDTH as i32/ 2) - (score_text.len() as i32 * 4); // Adjust for centering
     let y_position = ART_HEIGHT - 20; // Position near the bottom
-    for (i, ch) in score_text.chars().enumerate() {
-        draw_character(ch, x_position + i * 8, y_position, game_state);
-    }
+    let font_data = get_font_data();
+    let bit_font = BitFont { chars: font_data };
+    bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, &score_text, x_position, y_position as i32, 0xFFFFFF, 1.0);
 }
 
 pub fn draw_choose_perk_screen_with_highlight(game_state: &mut GameState, highlighted_perk: Option<usize>) {
@@ -131,6 +134,19 @@ pub fn draw_choose_perk_screen_with_highlight(game_state: &mut GameState, highli
         ART_WIDTH,
         None
     );
+
+    let font_data = get_font_data();
+
+    // Create a BitFont instance
+    let bit_font = BitFont { chars: font_data };
+
+
+    // Draw a single character
+    bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, "Select perk", 57, 25, 0xFFFFFF, 1.7); // White color
+
+    // Draw a string of text
+    // bit_font.draw_text_smooth_scaled(&mut game_state.window_buffer, ART_WIDTH, "ABB CBA", 59, 20, 0xFF0000, 4.0); // Red color
+
 
     // Designate the bottom part of the perk screen which shows the two available perks
     let perk_positions = [

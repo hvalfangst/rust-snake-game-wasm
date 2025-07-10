@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::time::Instant;
 use crate::graphics::sprites::SpriteMaps;
 use minifb::Window;
@@ -19,7 +20,7 @@ pub struct Snake {
     pub body_last_sprite_frame_index_update_time: Instant,
     pub head_sprite_frame_index: usize,
     pub head_last_sprite_frame_index_update_time: Instant,
-    pub proximity_to_food: bool,
+    pub food_near: bool,
 }
 
 impl Snake {
@@ -52,12 +53,12 @@ impl Snake {
             direction: initial_direction,
             body,
             move_timer: 0.0,
-            move_interval: 0.1,
+            move_interval: 0.1, // Default is 10 moves per second
             body_sprite_frame_index: 0,
             body_last_sprite_frame_index_update_time: Instant::now(),
             head_sprite_frame_index: 0,
             head_last_sprite_frame_index_update_time: Instant::now(),
-            proximity_to_food: false,
+            food_near: false,
         }
     }
 }
@@ -95,8 +96,11 @@ pub struct GameState<'a> {
     pub stars_offset_x: usize,
     pub stars_last_sprite_frame_update_time: Instant,
     pub stars_sprite_frame_index: usize,
-    pub perk_available: bool,
+    pub perk_eligibility: bool,
     pub selected_perk: Option<usize>,
+    pub food_score_value: u32,
+    pub perk_history: HashMap<u32, Perk>,
+    pub perk_required_score: u32
 }
 
 impl<'a> GameState<'a> {
@@ -132,8 +136,11 @@ impl<'a> GameState<'a> {
             stars_offset_x: 0,
             stars_last_sprite_frame_update_time: Instant::now(),
             stars_sprite_frame_index: 0,
-            perk_available: false,
+            perk_eligibility: false,
             selected_perk: None,
+            food_score_value: 100, // Default score value for food is 100
+            perk_history: HashMap::new(),
+            perk_required_score: 200, // Every 1000 points, a perk becomes available
         }
     }
 
@@ -154,3 +161,7 @@ impl<'a> GameState<'a> {
     }
 }
 
+pub enum Perk {
+    SpeedBoost,
+    DoubleScore,
+}

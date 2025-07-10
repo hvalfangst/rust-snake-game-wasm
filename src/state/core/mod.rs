@@ -1,12 +1,12 @@
 pub mod movement;
 pub mod bounds;
 pub mod food;
-pub mod game_state;
-pub mod game_over;
+pub mod tick;
+pub mod termination;
 pub mod collision;
-mod snake;
 mod background;
 mod perks;
+pub mod snake;
 
 use crate::state::structs::GameState;
 use rodio::Sink;
@@ -28,7 +28,7 @@ pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>
     let mut logic_map: HashMap<String, Rc<RefCell<dyn CoreLogic>>> = HashMap::new();
 
     // Game state updates
-    logic_map.insert("UpdateDeltaTime".to_string(), Rc::new(RefCell::new(game_state::UpdateDeltaTime)));
+    logic_map.insert("UpdateDeltaTime".to_string(), Rc::new(RefCell::new(tick::UpdateDeltaTime)));
 
     // Movement
     logic_map.insert("ModifyCoordinatesOfBodyParts".to_string(), Rc::new(RefCell::new(movement::ModifyCoordinatesOfBodyParts)));
@@ -54,7 +54,7 @@ pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>
     logic_map.insert("AlternateStarsSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateStarsSpriteFrame)));
 
     // Game over logic
-    logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(game_over::CheckGameOver)));
+    logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(termination::CheckGameOver)));
 
     // Perks
     logic_map.insert("CheckNewPerk".to_string(), Rc::new(RefCell::new(perks::CheckNewPerk)));

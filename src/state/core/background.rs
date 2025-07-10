@@ -1,4 +1,4 @@
-use crate::state::core_logic::CoreLogic;
+use crate::state::core::CoreLogic;
 use crate::state::structs::GameState;
 
 pub struct AlternateGlobeSpriteFrame;

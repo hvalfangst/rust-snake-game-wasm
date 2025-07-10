@@ -1,5 +1,5 @@
-pub mod event_loop;
-pub mod core_logic;
+pub mod r#loop;
+pub mod core;
 pub mod constants;
 pub mod structs;
 

@@ -1,7 +1,7 @@
 use rodio::Sink;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 use crate::state::constants::physics::{LOWER_BOUND_X, LOWER_BOUND_Y, UPPER_BOUND_X, UPPER_BOUND_Y};
-use crate::state::core_logic::CoreLogic;
+use crate::state::core::CoreLogic;
 use crate::state::structs::GameState;
 
 pub struct VerticalBounds;

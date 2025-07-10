@@ -117,7 +117,7 @@ pub fn img_to_buffer(img: &image::DynamicImage) -> Vec<u32> {
 /// - `window_width`: The width of the window in pixels.
 /// - `darkness_factor`: An optional factor to darken the sprite's colors. `None` means no darkening, while `Some(0.5)` applies 50% darkening to the sprite.
 ///
-/// This function uses alpha blending to combine the sprite's pixels with the corresponding pixels in the window buffer. Only non-transparent pixels in the sprite are drawn.
+/// Uses alpha blending to combine the sprite's pixels with the corresponding pixels in the window buffer. Only non-transparent pixels in the sprite are drawn.
 ///
 /// # Alpha Blending
 /// Alpha blending is a process used in computer graphics to combine a foreground image with a background image, resulting in a composite image.
@@ -142,13 +142,6 @@ pub fn img_to_buffer(img: &image::DynamicImage) -> Vec<u32> {
 /// - Red: 0xFF (255 in decimal, full intensity)
 /// - Green: 0x00 (0 in decimal, no intensity)
 /// - Blue: 0xFF (255 in decimal, full intensity)
-///
-/// # Example Usage
-/// ```rust
-/// let sprite = (16, 16, vec![0x80FF00FF; 256]); // A semi-transparent magenta 16x16 sprite
-/// let mut window_buffer = vec![0xFFFFFFFF; 800 * 600]; // A white 800x600 window buffer
-/// draw_sprite(10, 10, &sprite, &mut window_buffer, 800);
-/// ```
 pub fn draw_sprite(
     x: usize,
     y: usize,
@@ -166,17 +159,7 @@ pub fn draw_sprite(
                 let mut sprite_pixel = sprite.data[sprite_pixel_index];
 
                 // Apply darkening if specified
-                if let Some(factor) = darkness_factor {
-                    let alpha = (sprite_pixel >> 24) & 0xFF;
-                    let r = ((sprite_pixel >> 16) & 0xFF) as f32 * factor;
-                    let g = ((sprite_pixel >> 8) & 0xFF) as f32 * factor;
-                    let b = (sprite_pixel & 0xFF) as f32 * factor;
-
-                    sprite_pixel = (alpha << 24) |
-                        ((r as u32).min(255) << 16) |
-                        ((g as u32).min(255) << 8) |
-                        (b as u32).min(255);
-                }
+                maybe_darken(&mut sprite_pixel, darkness_factor);
 
                 let sprite_alpha = (sprite_pixel >> 24) & 0xFF;
                 let sprite_rgb = sprite_pixel & 0x00FFFFFF;
@@ -209,18 +192,11 @@ pub fn draw_sprite(
 ///   sprite's column, row, and world coordinates (x, y) as input and returns an `Option<f32>`
 ///   representing the darkness factor (e.g., `Some(0.5)` for 50% darker, or `None` for no shading).
 ///
-/// # Details
-/// This function applies gradient shading to the sprite's pixels based on the `shade_calculator`
+///
+/// Applies gradient shading to the sprite's pixels based on the `shade_calculator`
 /// closure. The shading is applied before blending the sprite's pixels with the window buffer.
 /// Alpha blending is used to combine the sprite's pixels with the corresponding pixels in the
 /// window buffer.
-///
-/// # Alpha Blending
-/// Alpha blending combines the sprite's foreground pixels with the background pixels in the
-/// window buffer. The formula for blending is:
-/// ```
-/// blended_color = (foreground_color * alpha + background_color * (255 - alpha)) / 255
-/// ```
 pub fn draw_sprite_with_gradient_shading<F>(
     x: usize,
     y: usize,
@@ -248,17 +224,7 @@ where
                 let darkness_factor = shade_calculator(col, row, world_x, world_y);
 
                 // Apply darkening if factor is provided
-                if let Some(factor) = darkness_factor {
-                    let alpha = (sprite_pixel >> 24) & 0xFF;
-                    let r = ((sprite_pixel >> 16) & 0xFF) as f32 * factor;
-                    let g = ((sprite_pixel >> 8) & 0xFF) as f32 * factor;
-                    let b = (sprite_pixel & 0xFF) as f32 * factor;
-
-                    sprite_pixel = (alpha << 24) |
-                        ((r as u32).min(255) << 16) |
-                        ((g as u32).min(255) << 8) |
-                        (b as u32).min(255);
-                }
+                maybe_darken(&mut sprite_pixel, darkness_factor);
 
                 let sprite_alpha = (sprite_pixel >> 24) & 0xFF;
                 let sprite_rgb = sprite_pixel & 0x00FFFFFF;
@@ -276,5 +242,30 @@ where
                 }
             }
         }
+    }
+}
+
+/// Applies a darkness factor to a sprite pixel iff `darkness_factor` is set.
+///
+/// # Parameters
+/// - `sprite_pixel`: A mutable reference to the pixel in ARGB format.
+/// - `darkness_factor`: An optional factor to darken the pixel's colors. `None` means no darkening,
+///   while `Some(0.5)` applies 50% darkening.
+///
+/// Extracts the red, green, and blue channels from the pixel, applies the darkness
+/// factor to each channel, and then reconstructs the pixel in ARGB format. The alpha channel
+/// remains unchanged.
+fn maybe_darken(sprite_pixel: &mut u32, darkness_factor: Option<f32>) {
+
+    if let Some(factor) = darkness_factor {
+        let alpha = (*sprite_pixel >> 24) & 0xFF;
+        let r = ((*sprite_pixel >> 16) & 0xFF) as f32 * factor;
+        let g = ((*sprite_pixel >> 8) & 0xFF) as f32 * factor;
+        let b = (*sprite_pixel & 0xFF) as f32 * factor;
+
+        *sprite_pixel = (alpha << 24) |
+            ((r as u32).min(255) << 16) |
+            ((g as u32).min(255) << 8) |
+            (b as u32).min(255);
     }
 }

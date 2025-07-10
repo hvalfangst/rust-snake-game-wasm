@@ -1,5 +1,5 @@
 use std::time::Instant;
-use crate::state::core_logic::CoreLogic;
+use crate::state::core::CoreLogic;
 use crate::state::constants::physics::{LOWER_BOUND_X, LOWER_BOUND_Y, UPPER_BOUND_X, UPPER_BOUND_Y};
 use crate::state::structs::{Direction, Food, GameState, Vector2D};
 use rodio::Sink;
@@ -38,18 +38,20 @@ impl CoreLogic for CheckIfFoodWasEaten {
         let food_position = &game_state.food.position;
 
         if (head_position.x - food_position.x).abs() < 24.0 && (head_position.y - food_position.y).abs() < 24.0 {
-            game_state.player.proximity_to_food = true;
+            game_state.player.food_near = true;
 
             if (head_position.x - food_position.x).abs() < 12.0 && (head_position.y - food_position.y).abs() < 12.0 {
                 game_state.food.is_active = false;
-                game_state.score += 100;
+                game_state.score += game_state.food_score_value;
 
-                if game_state.score % 200 == 0 {
-                    game_state.perk_available = true;   // Every 1000 points, make a perk available
+                // Check if one is eligible for a perk based on the score
+                if game_state.score % game_state.perk_required_score == 0 {
+                    game_state.perk_eligibility = true;
                 }
 
                 let tail_position = game_state.player.body.last().unwrap();
 
+                // Add a new segment to the snake's body at the tail position based on the current direction
                 let new_segment = match game_state.player.direction {
                     Direction::Left => Vector2D {
                         x: tail_position.x + SNAKE_BODY_WIDTH,
@@ -73,7 +75,7 @@ impl CoreLogic for CheckIfFoodWasEaten {
                 println!("Food eaten! Snake grew. New tail at: ({}, {})", new_segment.x, new_segment.y);
             }
         } else {
-            game_state.player.proximity_to_food = false;
+            game_state.player.food_near = false;
         }
     }
 }
@@ -92,3 +94,4 @@ impl CoreLogic for AlternateBetweenFoodSpriteFrames {
         }
     }
 }
+

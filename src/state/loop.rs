@@ -4,10 +4,10 @@ use std::rc::Rc;
 
 use minifb::Key;
 
-use crate::graphics::render_graphics::render_pixel_buffer;
-use crate::graphics::update_graphics::update_pixel_buffer;
+use crate::graphics::render::render_pixel_buffer;
+use crate::graphics::update::update_pixel_buffer;
 use crate::input::handler::handle_user_input;
-use crate::state::core_logic::{execute_core_logic, CoreLogic};
+use crate::state::core::{execute_core_logic, CoreLogic};
 use crate::state::structs::GameState;
 
 pub fn start_event_loop(mut game_state: GameState, core_logic_map: HashMap<String, Rc<RefCell<dyn CoreLogic>>>, sink: &mut rodio::Sink) {

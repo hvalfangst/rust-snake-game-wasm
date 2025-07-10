@@ -1,5 +1,5 @@
 pub mod sprites;
-pub mod render_graphics;
-pub mod update_graphics;
-mod symbols;
+pub mod render;
+pub mod update;
+mod text;
 

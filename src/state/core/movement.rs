@@ -1,7 +1,7 @@
 use crate::state::structs::{Direction, GameState};
 use rodio::Sink;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
-use crate::state::core_logic::CoreLogic;
+use crate::state::core::CoreLogic;
 
 pub struct ModifyCoordinatesOfBodyParts;
 

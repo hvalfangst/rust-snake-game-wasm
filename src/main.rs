@@ -7,8 +7,8 @@ use crate::state::constants::graphics::{ART_WIDTH, SCALED_WINDOW_HEIGHT, SCALED_
 use crate::state::structs::{Direction, GameState, Snake};
 use crate::{
     graphics::sprites::SpriteMaps,
-    state::core_logic::initialize_core_logic_map,
-    state::event_loop::start_event_loop,
+    state::core::initialize_core_logic_map,
+    state::r#loop::start_event_loop,
 };
 
 use rodio::{OutputStream, Sink};

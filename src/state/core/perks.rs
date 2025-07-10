@@ -1,7 +1,8 @@
 use minifb::{Key, KeyRepeat};
-use crate::graphics::render_graphics::render_pixel_buffer;
-use crate::graphics::update_graphics::draw_choose_perk_screen_with_highlight;
-use crate::state::core_logic::CoreLogic;
+use crate::graphics::render::render_pixel_buffer;
+use crate::graphics::update::draw_choose_perk_screen_with_highlight;
+use crate::state::core::CoreLogic;
+use crate::state::structs::Perk;
 
 pub struct CheckNewPerk;
 
@@ -9,7 +10,7 @@ pub struct CheckNewPerk;
 
 impl CoreLogic for CheckNewPerk {
     fn execute(&self, game_state: &mut crate::state::structs::GameState, _sink: &mut rodio::Sink) {
-        if game_state.perk_available {
+        if game_state.perk_eligibility {
             game_state.selected_perk = None;
             let mut highlighted_perk: Option<usize> = None;
             let mut perk_selected = false;
@@ -22,6 +23,14 @@ impl CoreLogic for CheckNewPerk {
             loop {
 
                 for (key, direction) in key_perk_map.iter() {
+
+                    // Defaults to the first perk if escape is pressed
+                    if game_state.window.is_key_pressed(Key::Escape, KeyRepeat::No) {
+                        game_state.selected_perk = Some(0);
+                        perk_selected = true;
+                    }
+
+                    // Keys A and D will map to an index used to highlight and ultimately decide perk
                     if game_state.window.is_key_down(*key) {
                         if let Some(current) = highlighted_perk {
                             let new_perk = (current as isize + direction).clamp(1, 2) as usize;
@@ -31,6 +40,7 @@ impl CoreLogic for CheckNewPerk {
                         }
                     }
 
+                    // Lock in choice, with default being the first perk as is the case for escape
                     if game_state.window.is_key_pressed(Key::Space, KeyRepeat::No) {
                         if let Some(perk) = highlighted_perk {
                             game_state.selected_perk = Some(perk);
@@ -44,16 +54,24 @@ impl CoreLogic for CheckNewPerk {
                 render_pixel_buffer(game_state);
 
                 if perk_selected {
-                    game_state.perk_available = false;
+                    game_state.perk_eligibility = false;
 
                     match game_state.selected_perk {
                         Some(1) => {
-                            // Example perk: 10 % Speed Boost
-                            game_state.player.move_interval -= 0.01;
+                            // 25% Speed Boost
+                            println!(
+                                "Perk 1 selected: Speed boost: before: {:.2} moves/sec, after: {:.2} moves/sec",
+                                1.0 / game_state.player.move_interval,
+                                1.0 / (game_state.player.move_interval * 0.8)
+                            );
+                            game_state.player.move_interval *= 0.8;
+                            game_state.perk_history.insert(game_state.score, Perk::SpeedBoost);
                         },
                         Some(2) => {
-                            // Example perk: Double Points
-                            game_state.score *= 2;
+                            // Double score awarded for consuming food
+                            println!("Perk 2 selected: Double score for food consumption: before: {}, after: {}", game_state.food_score_value, game_state.food_score_value * 2);
+                            game_state.food_score_value *= 2;
+                            game_state.perk_history.insert(game_state.score, Perk::DoubleScore);
                         }
                         _ => {}
                     }
@@ -61,8 +79,6 @@ impl CoreLogic for CheckNewPerk {
                     std::thread::sleep(std::time::Duration::from_millis(200));
                     break;
                 }
-
-
             }
         }
     }
