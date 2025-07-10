@@ -140,7 +140,7 @@ impl<'a> GameState<'a> {
             selected_perk: None,
             food_score_value: 100, // Default score value for food is 100
             perk_history: HashMap::new(),
-            perk_required_score: 200, // Every 1000 points, a perk becomes available
+            perk_required_score: 1000, // Every 1000 points, a perk becomes available
         }
     }
 
