@@ -72,7 +72,6 @@ impl CoreLogic for CheckIfFoodWasEaten {
                 };
 
                 game_state.player.body.push(new_segment);
-                println!("Food eaten! Snake grew. New tail at: ({}, {})", new_segment.x, new_segment.y);
             }
         } else {
             game_state.player.food_near = false;

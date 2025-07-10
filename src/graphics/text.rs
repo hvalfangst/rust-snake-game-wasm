@@ -1,6 +1,3 @@
-use crate::state::constants::graphics::{ART_HEIGHT, ART_WIDTH};
-use crate::state::structs::GameState;
-
 pub struct BitFont {
     pub(crate) chars: [[u8; 8]; 95], // 95 printable ASCII chars, 8 bytes each (8x8 bitmap)
 }
@@ -26,7 +23,6 @@ impl BitFont {
     pub fn draw_text_smooth_scaled(&self, framebuffer: &mut [u32], fb_width: usize, text: &str, x: i32, y: i32, color: u32, scale: f32) {
         let char_width = (8.0 * scale) as i32;
         let mut current_x = x;
-        let mut pixels_drawn = 0;
 
         // Iterate over each character in the text
         for (_char_idx, ch) in text.chars().enumerate() {
@@ -41,7 +37,6 @@ impl BitFont {
             // Calculate the scaled width and height for the character based on the scale factor
             let scaled_width = (8.0 * scale) as i32;
             let scaled_height = (8.0 * scale) as i32;
-            let mut char_pixels_drawn = 0;
 
             // Iterate over each pixel in the scaled character
             for py in 0..scaled_height {
@@ -66,8 +61,6 @@ impl BitFont {
 
                                 // Set the pixel color in the framebuffer
                                 framebuffer[screen_y as usize * fb_width + screen_x as usize] = color;
-                                char_pixels_drawn += 1;
-                                pixels_drawn += 1;
                             }
                         }
                     }

@@ -59,30 +59,20 @@ pub fn load_sprites_from_map(sprite_map_path: &str, sprite_width: u32, sprite_he
     let sprite_map = image::open(sprite_map_path).expect(&format!("Failed to open sprite map at {}", sprite_map_path));
     let (map_width, map_height) = sprite_map.dimensions();
 
-    println!("Sprite map loaded from {}", sprite_map_path);
-    println!("Sprite map dimensions: {}x{}", map_width, map_height);
-
     // Calculate the number of sprites in each dimension
     let sprites_x = map_width / sprite_width;
     let sprites_y = map_height / sprite_height;
-
-    println!("Sprites x: {}", sprites_x);
-    println!("Sprites y: {}", sprites_y);
 
     // Extract individual sprites and store them in a buffer
     let mut sprites = Vec::new();
     for y in 0..sprites_y {
         for x in 0..sprites_x {
-            println!("Extracting sprite at ({}, {})", x, y);
             let sprite = sprite_map.crop_imm(x * sprite_width, y * sprite_height, sprite_width, sprite_height);
             let buffer = img_to_buffer(&sprite);
-            println!("Sprite extracted: {}x{}, buffer length: {}", sprite_width, sprite_height, buffer.len());
             let new_sprite = SpriteFrame::new(sprite_width, sprite_height, buffer);
             sprites.push(new_sprite);
         }
     }
-
-    println!("Total sprites extracted: {}\n", sprites.len());
 
     // Return the vector of sprites
     sprites

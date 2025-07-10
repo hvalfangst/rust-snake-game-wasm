@@ -145,8 +145,6 @@ impl<'a> GameState<'a> {
     }
 
     pub fn restart_level(&mut self) {
-        println!("\n * * * * |Restarting Level| * * * * \n");
-
         self.player = Snake::new(40.0, 150.0, Direction::Right);
         self.food = Food {
             position: Vector2D { x: 100.0, y: 100.0 },
