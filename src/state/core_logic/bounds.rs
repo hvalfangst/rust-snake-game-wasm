@@ -7,7 +7,7 @@ use crate::state::structs::GameState;
 pub struct VerticalBounds;
 
 impl CoreLogic for VerticalBounds {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         let head = &mut game_state.player.body[0];
 
         // Wrap vertically with sprite height consideration
@@ -22,7 +22,7 @@ impl CoreLogic for VerticalBounds {
 pub struct HorizontalBounds;
 
 impl CoreLogic for HorizontalBounds {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         let head = &mut game_state.player.body[0];
 
         // Wrap horizontally with sprite width consideration

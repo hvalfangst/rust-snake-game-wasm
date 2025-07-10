@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::time::Instant;
 
 use minifb::Key;
 
@@ -15,7 +14,6 @@ pub fn start_event_loop(mut game_state: GameState, core_logic_map: HashMap<Strin
 
     // Main event loop: runs as long as the window is open and the Escape key is not pressed
     while game_state.window.is_open() && !game_state.window.is_key_down(Key::Escape) {
-        let start = Instant::now();
 
         // Handle basic user input, which influence player direction
         handle_user_input(&mut game_state);

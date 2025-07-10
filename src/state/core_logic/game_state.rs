@@ -6,7 +6,7 @@ use std::time::Instant;
 pub struct UpdateDeltaTime;
 
 impl CoreLogic for UpdateDeltaTime {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         let current_time = Instant::now();
 
         game_state.delta_time = if let Some(last_time) = game_state.last_frame_time {

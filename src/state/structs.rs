@@ -1,6 +1,6 @@
 use std::time::Instant;
 use crate::graphics::sprites::SpriteMaps;
-use minifb::{Key, Window};
+use minifb::Window;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 
 #[derive(Debug, Clone, Copy)]
@@ -12,15 +12,12 @@ pub struct Vector2D {
 
 pub struct Snake {
     pub direction: Direction,
-    pub last_key: Option<Key>,
-    pub body: Vec<(Vector2D)>,
+    pub body: Vec<Vector2D>,
     pub move_timer: f32,
     pub move_interval: f32,
     pub body_sprite_frame_index: usize,
-    pub body_sprite_timer: f32,
     pub body_last_sprite_frame_index_update_time: Instant,
     pub head_sprite_frame_index: usize,
-    pub head_sprite_timer: f32,
     pub head_last_sprite_frame_index_update_time: Instant,
     pub proximity_to_food: bool,
 }
@@ -53,15 +50,12 @@ impl Snake {
 
         Snake {
             direction: initial_direction,
-            last_key: None,
             body,
             move_timer: 0.0,
             move_interval: 0.1,
             body_sprite_frame_index: 0,
-            body_sprite_timer: 0.0,
             body_last_sprite_frame_index_update_time: Instant::now(),
             head_sprite_frame_index: 0,
-            head_sprite_timer: 0.0,
             head_last_sprite_frame_index_update_time: Instant::now(),
             proximity_to_food: false,
         }
@@ -101,6 +95,8 @@ pub struct GameState<'a> {
     pub stars_offset_x: usize,
     pub stars_last_sprite_frame_update_time: Instant,
     pub stars_sprite_frame_index: usize,
+    pub perk_available: bool,
+    pub selected_perk: Option<usize>,
 }
 
 impl<'a> GameState<'a> {
@@ -136,6 +132,8 @@ impl<'a> GameState<'a> {
             stars_offset_x: 0,
             stars_last_sprite_frame_update_time: Instant::now(),
             stars_sprite_frame_index: 0,
+            perk_available: false,
+            selected_perk: None,
         }
     }
 

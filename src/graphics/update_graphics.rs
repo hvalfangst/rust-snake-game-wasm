@@ -120,6 +120,51 @@ pub fn draw_game_over_screen(game_state: &mut GameState, index: usize) {
     }
 }
 
+pub fn draw_choose_perk_screen_with_highlight(game_state: &mut GameState, highlighted_perk: Option<usize>) {
+
+    // Draw top part of the perk screen which prompts the user for selection
+    draw_sprite(
+        0,
+        0,
+        &game_state.sprites.choose_perk[0],
+        game_state.window_buffer,
+        ART_WIDTH,
+        None
+    );
+
+    // Designate the bottom part of the perk screen which shows the two available perks
+    let perk_positions = [
+        (0, ART_HEIGHT / 2),
+        (128, ART_HEIGHT / 2),
+    ];
+
+    // Draw the perks at their designated positions with highlight added based on highlighted_perk
+    for (i, &(x, y)) in perk_positions.iter().enumerate() {
+        let perk_index = i + 1;
+        let is_highlighted = highlighted_perk == Some(perk_index);
+        let is_selected = game_state.selected_perk == Some(perk_index);
+
+        if i < game_state.sprites.perks.len() {
+            let darkness_factor = if is_selected {
+                None // Selected - full brightness
+            } else if is_highlighted {
+                Some(0.8) // Highlighted - slightly dim
+            } else {
+                Some(0.5) // Normal - more dim
+            };
+
+            draw_sprite(
+                x,
+                y,
+                &game_state.sprites.perks[i],
+                game_state.window_buffer,
+                ART_WIDTH,
+                darkness_factor,
+            );
+        }
+    }
+}
+
 
 pub fn draw_background(state: &mut GameState) {
 
@@ -147,13 +192,13 @@ pub fn draw_background(state: &mut GameState) {
 
         // Increment the x offset for layer 0
         if i == 0 {
-            state.stars_offset_x = (state.stars_offset_x + 1);
+            state.stars_offset_x = state.stars_offset_x + 1;
         }
 
         // Select the appropriate layer based on the index
         let layer = match i {
-            0 => &state.sprites.layer_0[state.stars_sprite_frame_index],
-            1 => &state.sprites.layer_1[state.globe_sprite_frame_index],
+            0 => &state.sprites.stars[state.stars_sprite_frame_index],
+            1 => &state.sprites.planet[state.globe_sprite_frame_index],
             _ => unreachable!(),
         };
 

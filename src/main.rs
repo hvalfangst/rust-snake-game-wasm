@@ -1,5 +1,4 @@
 use minifb::{Window, WindowOptions};
-use std::io::{BufRead, Read};
 use winit::event_loop::EventLoop;
 use winit::monitor::MonitorHandle;
 
@@ -23,7 +22,7 @@ fn main() {
     let mut sink = Sink::try_new(&stream_handle).unwrap();
     let sprites = SpriteMaps::new();
 
-    let mut player = Snake::new(40.0, 150.0, Direction::Right);
+    let player = Snake::new(40.0, 150.0, Direction::Right);
     let core_logic = initialize_core_logic_map();
     let fullscreen = false;
 

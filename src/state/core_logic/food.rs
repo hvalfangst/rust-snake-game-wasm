@@ -9,7 +9,7 @@ use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 pub struct SpawnFood;
 
 impl CoreLogic for SpawnFood {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         if game_state.food.is_active {
             return;
         }
@@ -29,7 +29,7 @@ impl CoreLogic for SpawnFood {
 pub struct CheckIfFoodWasEaten;
 
 impl CoreLogic for CheckIfFoodWasEaten {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         if !game_state.food.is_active {
             return;
         }
@@ -43,6 +43,10 @@ impl CoreLogic for CheckIfFoodWasEaten {
             if (head_position.x - food_position.x).abs() < 12.0 && (head_position.y - food_position.y).abs() < 12.0 {
                 game_state.food.is_active = false;
                 game_state.score += 100;
+
+                if game_state.score % 200 == 0 {
+                    game_state.perk_available = true;   // Every 1000 points, make a perk available
+                }
 
                 let tail_position = game_state.player.body.last().unwrap();
 
@@ -77,7 +81,7 @@ impl CoreLogic for CheckIfFoodWasEaten {
 pub struct AlternateBetweenFoodSpriteFrames;
 
 impl CoreLogic for AlternateBetweenFoodSpriteFrames {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         if !game_state.food.is_active {
             return;
         }

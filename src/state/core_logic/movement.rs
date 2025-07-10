@@ -6,7 +6,7 @@ use crate::state::core_logic::CoreLogic;
 pub struct ModifyCoordinatesOfBodyParts;
 
 impl CoreLogic for ModifyCoordinatesOfBodyParts {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
         // Update timer using stored delta time
         game_state.player.move_timer += game_state.delta_time;
 

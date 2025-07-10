@@ -6,16 +6,16 @@ pub mod game_over;
 pub mod collision;
 mod snake;
 mod background;
+mod perks;
 
 use crate::state::structs::GameState;
 use rodio::Sink;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use log::log;
 
 pub trait CoreLogic {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink);
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink);
 }
 
 pub fn execute_core_logic(game_state: &mut GameState, core_logic_operations: &HashMap<String, Rc<RefCell<dyn CoreLogic>>>, sink: &mut Sink) {
@@ -26,8 +26,6 @@ pub fn execute_core_logic(game_state: &mut GameState, core_logic_operations: &Ha
 
 pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>> {
     let mut logic_map: HashMap<String, Rc<RefCell<dyn CoreLogic>>> = HashMap::new();
-
-    logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(game_over::CheckGameOver)));
 
     // Game state updates
     logic_map.insert("UpdateDeltaTime".to_string(), Rc::new(RefCell::new(game_state::UpdateDeltaTime)));
@@ -51,10 +49,15 @@ pub fn initialize_core_logic_map() -> HashMap<String, Rc<RefCell<dyn CoreLogic>>
     logic_map.insert("AlternateBodySpriteFrameIndex".to_string(), Rc::new(RefCell::new(snake::AlternateBodySpriteFrameIndex)));
     logic_map.insert("AlternateHeadSpriteFrameIndex".to_string(), Rc::new(RefCell::new(snake::AlternateHeadSpriteFrameIndex)));
 
-    // Background sprite frame
+    // Background sprite frames
     logic_map.insert("AlternateBackgroundSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateGlobeSpriteFrame)));
-
     logic_map.insert("AlternateStarsSpriteFrame".to_string(), Rc::new(RefCell::new(background::AlternateStarsSpriteFrame)));
+
+    // Game over logic
+    logic_map.insert("CheckGameOver".to_string(), Rc::new(RefCell::new(game_over::CheckGameOver)));
+
+    // Perks
+    logic_map.insert("CheckNewPerk".to_string(), Rc::new(RefCell::new(perks::CheckNewPerk)));
 
     logic_map
 }

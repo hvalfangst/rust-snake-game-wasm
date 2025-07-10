@@ -14,28 +14,30 @@ impl SpriteFrame {
 
 pub struct SpriteMaps {
     pub body: Vec<SpriteFrame>,
-    pub background: Vec<SpriteFrame>,
     pub food: Vec<SpriteFrame>,
     pub head: Vec<SpriteFrame>,
     pub tail: Vec<SpriteFrame>,
     pub game_over_screen: Vec<SpriteFrame>,
-    pub layer_0: Vec<SpriteFrame>,
-    pub layer_1: Vec<SpriteFrame>,
+    pub stars: Vec<SpriteFrame>,
+    pub planet: Vec<SpriteFrame>,
     pub blue_strip: Vec<SpriteFrame>,
+    pub perks: Vec<SpriteFrame>,
+    pub choose_perk: Vec<SpriteFrame>
 }
 
 impl SpriteMaps {
     pub fn new() -> Self {
         Self {
-            background: load_sprites_from_map("assets/sprites/background.png", 256, 224),
             body: load_sprites_from_map("assets/sprites/body.png", 6, 6),
             food: load_sprites_from_map("assets/sprites/food.png", 16, 16),
             head: load_sprites_from_map("assets/sprites/head.png", 16, 16),
             tail: load_sprites_from_map("assets/sprites/tail.png", 6, 6),
             game_over_screen: load_sprites_from_map("assets/sprites/game_over.png", 256, 224),
-            layer_0: load_sprites_from_map("assets/sprites/layer_0.png", 256, 224),
-            layer_1: load_sprites_from_map("assets/sprites/layer_1.png", 256, 224),
+            stars: load_sprites_from_map("assets/sprites/layer_0.png", 256, 224),
+            planet: load_sprites_from_map("assets/sprites/layer_1.png", 256, 224),
             blue_strip: load_sprites_from_map("assets/sprites/blue_strip.png", 256, 224),
+            perks: load_sprites_from_map("assets/sprites/perks.png", 128, 112),
+            choose_perk: load_sprites_from_map("assets/sprites/choose_perk.png", 256, 112)
         }
     }
 }
@@ -276,20 +278,3 @@ where
         }
     }
 }
-
-/// Sets a pixel in the window buffer at the specified coordinates.
-///
-/// # Parameters
-/// - `x`: The x-coordinate where the pixel will be set.
-/// - `y`: The y-coordinate where the pixel will be set.
-/// - `color`: The color of the pixel in ARGB format.
-/// - `window_buffer`: A mutable slice of `u32` representing the pixels of the window buffer.
-/// - `window_width`: The width of the window in pixels.
-pub fn set_pixel(x: usize, y: usize, color: u32, window_buffer: &mut [u32], window_width: usize) {
-    let window_pixel_index = y * window_width + x;
-    if window_pixel_index < window_buffer.len() {
-        window_buffer[window_pixel_index] = color;
-    }
-}
-
-

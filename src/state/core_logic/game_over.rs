@@ -7,7 +7,7 @@ use crate::graphics::render_graphics::render_pixel_buffer;
 pub struct CheckGameOver;
 
 impl CoreLogic for CheckGameOver {
-    fn execute(&self, game_state: &mut GameState, sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
 
         if game_state.game_over {
             let mut frame = 0;
