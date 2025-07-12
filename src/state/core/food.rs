@@ -71,6 +71,11 @@ impl CoreLogic for CheckIfFoodWasEaten {
                 };
 
                 game_state.player.body.push(new_segment);
+
+                // Play sound effect for eating food
+                game_state.audio_manager.play_fx("assets/audio/eat.mp3").unwrap_or_else(|e| {
+                    eprintln!("Failed to play FX: {}", e);
+                });
             }
         } else {
             game_state.player.food_near = false;

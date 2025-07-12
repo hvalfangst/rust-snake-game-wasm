@@ -16,7 +16,8 @@ pub fn start_event_loop(mut game_state: GameState, core_logic_map: HashMap<Strin
     while game_state.window.is_open() && !game_state.window.is_key_down(Key::Escape) {
 
         if !game_state.audio_manager.is_music_playing() {
-            game_state.audio_manager.play_music("assets/audio/music.wav").unwrap_or_else(|e| {
+            println!("Playing background music...");
+            game_state.audio_manager.play_music("assets/audio/music.mp3").unwrap_or_else(|e| {
                 eprintln!("Failed to play music: {}", e);
             });
         }
