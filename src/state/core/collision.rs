@@ -1,12 +1,11 @@
 use crate::state::core::CoreLogic;
 use crate::state::structs::GameState;
-use rodio::Sink;
 use crate::state::constants::physics::COLLISION_TOLERANCE;
 
 pub struct CheckSelfCollision;
 
 impl CoreLogic for CheckSelfCollision {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         if game_state.player.body.len() <= 1 {
             return; // Can't collide with self if only head exists
         }

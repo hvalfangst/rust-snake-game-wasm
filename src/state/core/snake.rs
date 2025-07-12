@@ -5,7 +5,7 @@ use std::time::Instant;
 pub struct AlternateBodySpriteFrameIndex;
 
 impl CoreLogic for AlternateBodySpriteFrameIndex {
-    fn execute(&self, game_state: &mut GameState, __sink: &mut rodio::Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         // Alternate the frame index for the snake's body sprites every 1500 milliseconds
         if game_state.player.body_last_sprite_frame_index_update_time.elapsed().as_millis() >= 1500 {
             game_state.player.body_sprite_frame_index = (game_state.player.body_sprite_frame_index + 1) % 2;
@@ -18,7 +18,7 @@ impl CoreLogic for AlternateBodySpriteFrameIndex {
 pub struct AlternateHeadSpriteFrameIndex;
 
 impl CoreLogic for AlternateHeadSpriteFrameIndex {
-    fn execute(&self, game_state: &mut GameState, __sink: &mut rodio::Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         if game_state.player.food_near {
             game_state.player.head_sprite_frame_index = 3;
         } else {

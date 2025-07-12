@@ -1,8 +1,10 @@
-use std::collections::HashMap;
-use std::time::Instant;
+use crate::audio::manager::AudioManager;
 use crate::graphics::sprites::SpriteMaps;
 use minifb::Window;
+use std::collections::HashMap;
+use std::time::Instant;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
+
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector2D {
@@ -10,6 +12,13 @@ pub struct Vector2D {
     pub y: f32,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Direction {
+    Right,
+    Left,
+    Up,
+    Down,
+}
 
 pub struct Snake {
     pub direction: Direction,
@@ -63,19 +72,16 @@ impl Snake {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum Direction {
-    Right,
-    Left,
-    Up,
-    Down,
-}
-
 pub struct Food {
     pub position: Vector2D,
     pub is_active: bool,
     pub food_sprite_frame_index: usize,
     pub food_last_sprite_frame_index_update_time: Instant,
+}
+
+pub enum Perk {
+    SpeedBoost,
+    DoubleScore,
 }
 
 pub struct GameState<'a> {
@@ -100,7 +106,8 @@ pub struct GameState<'a> {
     pub selected_perk: Option<usize>,
     pub food_score_value: u32,
     pub perk_history: HashMap<u32, Perk>,
-    pub perk_required_score: u32
+    pub perk_required_score: u32,
+    pub audio_manager: AudioManager
 }
 
 impl<'a> GameState<'a> {
@@ -141,6 +148,7 @@ impl<'a> GameState<'a> {
             food_score_value: 100, // Default score value for food is 100
             perk_history: HashMap::new(),
             perk_required_score: 1000, // Every 1000 points, a perk becomes available
+            audio_manager: AudioManager::new().expect("Failed to initialize audio manager"),
         }
     }
 
@@ -159,7 +167,3 @@ impl<'a> GameState<'a> {
     }
 }
 
-pub enum Perk {
-    SpeedBoost,
-    DoubleScore,
-}

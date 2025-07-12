@@ -15,12 +15,12 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 pub trait CoreLogic {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink);
+    fn execute(&self, game_state: &mut GameState);
 }
 
-pub fn execute_core_logic(game_state: &mut GameState, core_logic_operations: &HashMap<String, Rc<RefCell<dyn CoreLogic>>>, sink: &mut Sink) {
+pub fn execute_core_logic(game_state: &mut GameState, core_logic_operations: &HashMap<String, Rc<RefCell<dyn CoreLogic>>>) {
     for (_, core_logic_operation) in core_logic_operations.iter() {
-        core_logic_operation.borrow().execute(game_state, sink);
+        core_logic_operation.borrow().execute(game_state);
     }
 }
 

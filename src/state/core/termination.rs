@@ -1,13 +1,12 @@
 use crate::graphics::update::draw_game_over_screen;
 use crate::state::core::CoreLogic;
 use crate::state::structs::GameState;
-use rodio::Sink;
 use crate::graphics::render::render_pixel_buffer;
 
 pub struct CheckGameOver;
 
 impl CoreLogic for CheckGameOver {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
 
         if game_state.game_over {
             let mut frame = 0;

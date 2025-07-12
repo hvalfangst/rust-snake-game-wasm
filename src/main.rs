@@ -15,6 +15,7 @@ use rodio::{OutputStream, Sink};
 mod state;
 mod graphics;
 mod input;
+mod audio;
 
 fn main() {
     // Initialize the audio output stream and sink

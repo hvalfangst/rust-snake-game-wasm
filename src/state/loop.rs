@@ -15,11 +15,17 @@ pub fn start_event_loop(mut game_state: GameState, core_logic_map: HashMap<Strin
     // Main event loop: runs as long as the window is open and the Escape key is not pressed
     while game_state.window.is_open() && !game_state.window.is_key_down(Key::Escape) {
 
+        if !game_state.audio_manager.is_music_playing() {
+            game_state.audio_manager.play_music("assets/audio/music.wav").unwrap_or_else(|e| {
+                eprintln!("Failed to play music: {}", e);
+            });
+        }
+
         // Handle basic user input, which influence player direction
         handle_user_input(&mut game_state);
 
         // Process game logic such as obstacle detection
-        execute_core_logic(&mut game_state, &core_logic_map, sink);
+        execute_core_logic(&mut game_state, &core_logic_map);
 
         // Update the pixel buffer with the current game state
         update_pixel_buffer(&mut game_state);

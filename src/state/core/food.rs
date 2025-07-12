@@ -2,14 +2,13 @@ use std::time::Instant;
 use crate::state::core::CoreLogic;
 use crate::state::constants::physics::{LOWER_BOUND_X, LOWER_BOUND_Y, UPPER_BOUND_X, UPPER_BOUND_Y};
 use crate::state::structs::{Direction, Food, GameState, Vector2D};
-use rodio::Sink;
 use rand::Rng;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 
 pub struct SpawnFood;
 
 impl CoreLogic for SpawnFood {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         if game_state.food.is_active {
             return;
         }
@@ -29,7 +28,7 @@ impl CoreLogic for SpawnFood {
 pub struct CheckIfFoodWasEaten;
 
 impl CoreLogic for CheckIfFoodWasEaten {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         if !game_state.food.is_active {
             return;
         }
@@ -82,7 +81,7 @@ impl CoreLogic for CheckIfFoodWasEaten {
 pub struct AlternateBetweenFoodSpriteFrames;
 
 impl CoreLogic for AlternateBetweenFoodSpriteFrames {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         if !game_state.food.is_active {
             return;
         }

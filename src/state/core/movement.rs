@@ -1,12 +1,11 @@
 use crate::state::structs::{Direction, GameState};
-use rodio::Sink;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 use crate::state::core::CoreLogic;
 
 pub struct ModifyCoordinatesOfBodyParts;
 
 impl CoreLogic for ModifyCoordinatesOfBodyParts {
-    fn execute(&self, game_state: &mut GameState, _sink: &mut Sink) {
+    fn execute(&self, game_state: &mut GameState) {
         // Update timer using stored delta time
         game_state.player.move_timer += game_state.delta_time;
 

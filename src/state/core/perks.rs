@@ -9,7 +9,7 @@ pub struct CheckNewPerk;
 
 
 impl CoreLogic for CheckNewPerk {
-    fn execute(&self, game_state: &mut crate::state::structs::GameState, _sink: &mut rodio::Sink) {
+    fn execute(&self, game_state: &mut crate::state::structs::GameState) {
         if game_state.perk_eligibility {
             game_state.selected_perk = None;
             let mut highlighted_perk: Option<usize> = None;
