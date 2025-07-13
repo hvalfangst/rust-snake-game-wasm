@@ -120,6 +120,7 @@ impl<'a> GameState<'a> {
         window_height: usize,
         window: &'a mut Window,
         scaled_buffer: &'a mut Vec<u32>,
+        audio_manager: AudioManager
     ) -> Self {
         GameState {
             player,
@@ -149,7 +150,7 @@ impl<'a> GameState<'a> {
             food_score_value: 100, // Default score value for food is 100
             perk_history: HashMap::new(),
             perk_required_score: 1000, // Every 1000 points, a perk becomes available
-            audio_manager: AudioManager::new().expect("Failed to initialize audio manager"),
+            audio_manager,
             music_disabled: false,
         }
     }

@@ -3,6 +3,7 @@ use crate::state::core::CoreLogic;
 use crate::state::constants::physics::{LOWER_BOUND_X, LOWER_BOUND_Y, UPPER_BOUND_X, UPPER_BOUND_Y};
 use crate::state::structs::{Direction, Food, GameState, Vector2D};
 use rand::Rng;
+use crate::audio::manager::SfxId;
 use crate::state::constants::graphics::{SNAKE_BODY_HEIGHT, SNAKE_BODY_WIDTH};
 
 pub struct SpawnFood;
@@ -73,9 +74,8 @@ impl CoreLogic for CheckIfFoodWasEaten {
                 game_state.player.body.push(new_segment);
 
                 // Play sound effect for eating food
-                game_state.audio_manager.play_fx("assets/audio/eat.mp3").unwrap_or_else(|e| {
-                    eprintln!("Failed to play FX: {}", e);
-                });
+                game_state.audio_manager.play_sfx(SfxId::Eat)
+                    .expect("Failed to play eat food sound effect");
             }
         } else {
             game_state.player.food_near = false;

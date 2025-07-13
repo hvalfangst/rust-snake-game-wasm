@@ -12,6 +12,8 @@ use crate::{
 };
 
 use rodio::{OutputStream, Sink};
+use crate::audio::manager::AudioManager;
+
 mod state;
 mod graphics;
 mod input;
@@ -50,6 +52,11 @@ fn main() {
     let mut window_buffer = vec![0; ART_WIDTH * ART_WIDTH];
     let mut scaled_buffer = vec![0; window_width * window_height];
 
+    // Create audio manager and preload audio files
+    let audio_manager = AudioManager::new().unwrap();
+    audio_manager.preload_all_music().unwrap();
+    audio_manager.preload_all_sfx().unwrap();
+
     let game_state = GameState::new(
         player,
         sprites,
@@ -58,7 +65,11 @@ fn main() {
         window_height,
         &mut window,
         &mut scaled_buffer,
+        audio_manager,
     );
+
+    // Sleep for a second just to allow the audio manager to initialize properly
+    std::thread::sleep(std::time::Duration::from_secs(1));
 
     start_event_loop(game_state, core_logic);
 }

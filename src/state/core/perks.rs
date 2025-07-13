@@ -1,4 +1,5 @@
 use minifb::{Key, KeyRepeat};
+use crate::audio::manager::SfxId;
 use crate::graphics::render::render_pixel_buffer;
 use crate::graphics::update::draw_choose_perk_screen_with_highlight;
 use crate::state::constants::audio::NEW_PERK_FILE;
@@ -20,9 +21,8 @@ impl CoreLogic for CheckNewPerk {
 
             game_state.music_disabled = true;
 
-            game_state.audio_manager.play_fx(NEW_PERK_FILE).unwrap_or_else(|e| {
-                eprintln!("Failed to play music: {}", e);
-            });
+            game_state.audio_manager.play_sfx(SfxId::NewPerk)
+                .expect("Failed to play new perk sound effect");
 
 
             game_state.selected_perk = None;
