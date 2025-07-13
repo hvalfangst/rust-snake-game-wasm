@@ -1,6 +1,7 @@
 use minifb::{Key, KeyRepeat};
 use crate::graphics::render::render_pixel_buffer;
 use crate::graphics::update::draw_choose_perk_screen_with_highlight;
+use crate::state::constants::audio::NEW_PERK_FILE;
 use crate::state::core::CoreLogic;
 use crate::state::structs::Perk;
 
@@ -11,6 +12,19 @@ pub struct CheckNewPerk;
 impl CoreLogic for CheckNewPerk {
     fn execute(&self, game_state: &mut crate::state::structs::GameState) {
         if game_state.perk_eligibility {
+
+            // Play new perk music, stop and disable any existing music
+            if game_state.audio_manager.is_music_playing() {
+                game_state.audio_manager.stop_music();
+            }
+
+            game_state.music_disabled = true;
+
+            game_state.audio_manager.play_fx(NEW_PERK_FILE).unwrap_or_else(|e| {
+                eprintln!("Failed to play music: {}", e);
+            });
+
+
             game_state.selected_perk = None;
             let mut highlighted_perk: Option<usize> = None;
             let mut perk_selected = false;
@@ -52,6 +66,7 @@ impl CoreLogic for CheckNewPerk {
 
                 draw_choose_perk_screen_with_highlight(game_state, highlighted_perk);
                 render_pixel_buffer(game_state);
+
 
                 if perk_selected {
                     game_state.perk_eligibility = false;

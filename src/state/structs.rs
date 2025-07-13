@@ -107,7 +107,8 @@ pub struct GameState<'a> {
     pub food_score_value: u32,
     pub perk_history: HashMap<u32, Perk>,
     pub perk_required_score: u32,
-    pub audio_manager: AudioManager
+    pub audio_manager: AudioManager,
+    pub music_disabled: bool
 }
 
 impl<'a> GameState<'a> {
@@ -149,6 +150,7 @@ impl<'a> GameState<'a> {
             perk_history: HashMap::new(),
             perk_required_score: 1000, // Every 1000 points, a perk becomes available
             audio_manager: AudioManager::new().expect("Failed to initialize audio manager"),
+            music_disabled: false,
         }
     }
 

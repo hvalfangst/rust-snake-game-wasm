@@ -20,7 +20,6 @@ mod audio;
 fn main() {
     // Initialize the audio output stream and sink
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let mut sink = Sink::try_new(&stream_handle).unwrap();
     let sprites = SpriteMaps::new();
 
     let player = Snake::new(40.0, 150.0, Direction::Right);
@@ -61,5 +60,5 @@ fn main() {
         &mut scaled_buffer,
     );
 
-    start_event_loop(game_state, core_logic, &mut sink);
+    start_event_loop(game_state, core_logic);
 }
